@@ -1,0 +1,104 @@
+---
+import LegalPage from "../components/LegalPage.astro";
+---
+
+<LegalPage
+  title="Privacy"
+  description="What Cassette and getcassette.app collect: no account, no analytics, no tracking. Your music data stays on your device and your server."
+  updated="October 13, 2026"
+>
+  <p class="lead">
+    Short version: Cassette has no account, no analytics and no ads. Your library lives on your server, the app talks to that
+    server and to nothing else you haven’t turned on yourself, and this website sets no cookies.
+  </p>
+
+  <h2>Who runs Cassette</h2>
+  <p>
+    Cassette is an open-source project started by Mathieu Dubart and published under the
+    <a href="https://github.com/CassetteLab" rel="noopener" target="_blank">CassetteLab</a> organization. For anything related to
+    privacy, write to <a href="mailto:support@getcassette.app">support@getcassette.app</a>.
+  </p>
+
+  <h2>The app</h2>
+  <p>There are no Cassette servers. The app connects directly to the music server you set up, and that’s where your data goes.</p>
+  <ul>
+    <li>
+      <strong>Server details.</strong> Your server address and username are stored on your device. Your password or token is kept in
+      the system Keychain. They are only ever sent to the server you configured.
+    </li>
+    <li>
+      <strong>Custom headers.</strong> If you add headers (for example for Cloudflare Access), they are stored on your device and sent
+      only to your server.
+    </li>
+    <li>
+      <strong>Your library and listening.</strong> Cached artwork, downloads, play history and listening stats are stored on your
+      device. Plays may also be reported to your own server, as with any Subsonic client.
+    </li>
+    <li>
+      <strong>No tracking.</strong> Cassette contains no analytics, advertising or tracking SDKs, and doesn’t collect anything about you
+      for us.
+    </li>
+  </ul>
+
+  <h2>Services you choose to connect</h2>
+  <p>
+    Some features send data to a third party, and only once you turn them on. If you enable
+    <strong>ListenBrainz</strong> scrobbling, the tracks you play and your ListenBrainz token are sent to ListenBrainz, under the
+    <a href="https://metabrainz.org/privacy" rel="noopener" target="_blank">MetaBrainz privacy policy</a>. Other self-hosted services you
+    add are contacted the same way as your music server: directly, from your device.
+  </p>
+
+  <h2>Beta and downloads</h2>
+  <ul>
+    <li>
+      <strong>iPhone (TestFlight).</strong> The beta is distributed by Apple through TestFlight. Apple may share crash reports, basic
+      device information and any feedback you choose to send with the developer, as described in
+      <a href="https://www.apple.com/legal/privacy/data/en/testflight/" rel="noopener" target="_blank">Apple’s TestFlight privacy notice</a>.
+      They are used only to fix bugs.
+    </li>
+    <li>
+      <strong>Mac (Homebrew).</strong> The app is downloaded from GitHub Releases. GitHub handles that download under its own privacy
+      statement.
+    </li>
+  </ul>
+
+  <h2>This website</h2>
+  <ul>
+    <li><strong>No cookies, no analytics.</strong> Fonts and images are served from this site, not from third-party CDNs.</li>
+    <li>
+      <strong>Hosting.</strong> getcassette.app is hosted on GitHub Pages. Like any web host, GitHub may log technical data such as your
+      IP address for security and operation, under the
+      <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener" target="_blank"
+        >GitHub Privacy Statement</a
+      >.
+    </li>
+    <li>
+      <strong>Contact form.</strong> The name, email, subject and message you send are delivered by
+      <a href="https://web3forms.com/privacy" rel="noopener" target="_blank">Web3Forms</a> to our inbox. They are used only to reply to
+      you and are not added to any mailing list.
+    </li>
+    <li>
+      <strong>“Playing on my cassette”.</strong> The live track shown on the home page is fetched by your browser from mathieu-dubart.fr,
+      the developer’s own server. That server receives an ordinary web request (including your IP address) and may keep standard
+      access logs. Nothing is stored in your browser.
+    </li>
+    <li>
+      <strong>Ko-fi.</strong> Support on Ko-fi is handled by Ko-fi under its own policy. We only see what Ko-fi shows creators, such as
+      the name and message you choose to leave.
+    </li>
+  </ul>
+
+  <h2>Your rights</h2>
+  <p>
+    The only personal data we can hold about you is what you send us yourself: a contact message, TestFlight feedback, a Ko-fi note.
+    You can ask to see it, correct it or have it deleted at any time by writing to
+    <a href="mailto:support@getcassette.app">support@getcassette.app</a>. If you’re in the EU, you can also file a complaint with your
+    data protection authority (in France, the CNIL).
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    If this policy changes, the new version will be posted on this page with a new date. The full history is public in the
+    <a href="https://github.com/CassetteLab/cassette-web" rel="noopener" target="_blank">website’s repository</a>.
+  </p>
+</LegalPage>

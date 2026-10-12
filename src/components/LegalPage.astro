@@ -1,0 +1,107 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Footer from "./Footer.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  updated: string;
+}
+
+const { title, description, updated } = Astro.props;
+---
+
+<Layout title={`${title} · Cassette`} description={description}>
+  <main class="legal">
+    <div class="shell">
+      <header class="legal-head">
+        <p class="label">Cassette · fine print</p>
+        <h1 class="legal-title display">{title}</h1>
+        <p class="legal-updated">Last updated {updated}</p>
+      </header>
+
+      <article class="legal-body">
+        <slot />
+      </article>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<style>
+  .legal {
+    padding: 8rem 0 6rem;
+  }
+
+  .legal-head {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .legal-title {
+    margin: 1rem 0 0;
+    font-size: clamp(4rem, 13vw, 10rem);
+    color: var(--tint);
+  }
+
+  .legal-updated {
+    margin: 1.25rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+  }
+
+  .legal-body {
+    max-width: 44rem;
+    padding-top: 1rem;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+  }
+
+  .legal-body :global(h2) {
+    margin: 3rem 0 0.75rem;
+    font-size: 1.375rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--color-text-primary);
+  }
+
+  .legal-body :global(p),
+  .legal-body :global(ul) {
+    margin: 0 0 1rem;
+  }
+
+  .legal-body :global(ul) {
+    padding-left: 1.25rem;
+  }
+
+  .legal-body :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .legal-body :global(strong) {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .legal-body :global(a) {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .legal-body :global(.lead) {
+    font-size: 1.25rem;
+    line-height: 1.55;
+    color: var(--color-text-primary);
+  }
+
+  @media (min-width: 900px) {
+    .legal {
+      padding: 9rem 0 8rem;
+    }
+  }
+</style>
