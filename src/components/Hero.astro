@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import { heroScreens } from "../data/screens";
+import NowPlaying from "./NowPlaying.astro";
 
 const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
 const first = heroScreens[0];
@@ -35,6 +36,7 @@ const first = heroScreens[0];
     </div>
 
     <div class="hero-intro">
+      <NowPlaying />
       <p class="hero-lede">
         A native iPhone and Mac app for the music on your own server.
       </p>
@@ -393,6 +395,9 @@ const first = heroScreens[0];
 
     let current = 0;
     let playing = false;
+    let visible = false;
+    // Set while the live cover (NowPlaying) is painting the page.
+    let held = false;
 
     hero.style.setProperty("--dwell", `${DWELL}ms`);
 
@@ -424,11 +429,32 @@ const first = heroScreens[0];
     });
 
     const setPlaying = (on: boolean) => {
-      playing = on && !reduceMotion;
+      visible = on;
+      playing = on && !held && !reduceMotion;
       restartBar();
     };
 
-    btns.forEach((b, k) => b.addEventListener("click", () => show(k)));
+    btns.forEach((b, k) =>
+      b.addEventListener("click", () => {
+        if (held) {
+          held = false;
+          window.dispatchEvent(new Event("hero:release"));
+          setPlaying(visible);
+        }
+        show(k);
+      }),
+    );
+
+    // The live cover takes over the color; rotation stops until a screen is picked.
+    window.addEventListener("hero:hold", (e) => {
+      const { tint, ink } = (e as CustomEvent<{ tint: string; ink: string }>).detail;
+      held = true;
+      setPlaying(visible);
+      btns.forEach((b) => b.setAttribute("aria-pressed", "false"));
+      root.style.setProperty("--tint", tint);
+      root.style.setProperty("--ink", ink);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", tint);
+    });
 
     // Hovering the phone or the list holds the current screen.
     const holders = [

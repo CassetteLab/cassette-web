@@ -4,6 +4,8 @@ import sitemap from '@astrojs/sitemap';
 
 import tailwindcss from '@tailwindcss/vite';
 
+const NOW_PLAYING_ORIGIN = process.env.NOW_PLAYING_ORIGIN ?? 'https://mathieu-dubart.fr';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://getcassette.app',
@@ -28,5 +30,13 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      // Dev only: forward the now-playing calls to the portfolio's Navidrome
+      // proxy, so the live pill works locally without any CORS setup.
+      proxy: {
+        '/api/now-playing': { target: NOW_PLAYING_ORIGIN, changeOrigin: true },
+        '/api/cover-art': { target: NOW_PLAYING_ORIGIN, changeOrigin: true },
+      },
+    },
   },
 });
