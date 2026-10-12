@@ -103,6 +103,10 @@ const links = [
     text-align: center;
     color: var(--tint);
     user-select: none;
+    /* Decorative giant type: its text box is far taller than the visible
+       letters (tight line-height, big font ascent), so it must never take
+       clicks meant for the links around it. */
+    pointer-events: none;
   }
 
   .footer-bottom {

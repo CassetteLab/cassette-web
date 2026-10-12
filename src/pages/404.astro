@@ -70,6 +70,10 @@ const palette = heroScreens.map(({ tint, ink }) => ({ tint, ink }));
     font-size: min(52vw, 34rem);
     line-height: 0.8;
     letter-spacing: -0.02em;
+    /* Decorative giant type: its text box is far taller than the visible
+       letters (tight line-height, big font ascent), so it must never take
+       clicks meant for the links around it. */
+    pointer-events: none;
   }
 
   .nf-copy {
