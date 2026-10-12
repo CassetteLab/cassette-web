@@ -1,0 +1,147 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Footer from "../components/Footer.astro";
+import { heroScreens } from "../data/screens";
+
+// Each visit to a dead link lands on a different color from the hero rotation.
+const palette = heroScreens.map(({ tint, ink }) => ({ tint, ink }));
+---
+
+<Layout title="Not found · Cassette" description="This page doesn't exist." noindex={true}>
+  <main class="nf" data-nf data-palette={JSON.stringify(palette)}>
+    <div class="nf-stage shell">
+      <p class="nf-label">side c · track 404</p>
+      <h1 class="nf-code display">
+        <span aria-hidden="true">404</span>
+        <span class="sr-only">Page not found</span>
+      </h1>
+      <div class="nf-copy">
+        <p class="nf-lede">This track isn’t on the tape.</p>
+        <p class="nf-sub">The page you’re looking for doesn’t exist, or it moved.</p>
+        <div class="nf-cta">
+          <a class="nf-btn" href="/">Back to side A</a>
+          <a class="nf-link" href="/#install">Get Cassette</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  const nf = document.querySelector<HTMLElement>("[data-nf]");
+  try {
+    const palette: { tint: string; ink: string }[] = JSON.parse(nf?.dataset.palette ?? "[]");
+    const pick = palette[Math.floor(Math.random() * palette.length)];
+    if (pick) {
+      document.documentElement.style.setProperty("--tint", pick.tint);
+      document.documentElement.style.setProperty("--ink", pick.ink);
+    }
+  } catch {
+    /* keep the default red */
+  }
+</script>
+
+<style>
+  .nf {
+    background-color: var(--tint);
+    color: var(--ink);
+    overflow: clip;
+  }
+
+  .nf-stage {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 100svh;
+    padding-top: 6rem;
+    padding-bottom: 3rem;
+  }
+
+  .nf-label {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    opacity: 0.75;
+  }
+
+  .nf-code {
+    margin: 0.5rem 0 0;
+    font-size: min(52vw, 34rem);
+    line-height: 0.8;
+    letter-spacing: -0.02em;
+  }
+
+  .nf-copy {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+    max-width: 32rem;
+  }
+
+  .nf-lede {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.4vw, 2.75rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .nf-sub {
+    margin: 0;
+    font-size: 1.0625rem;
+    opacity: 0.85;
+  }
+
+  .nf-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .nf-btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 1.375rem;
+    border-radius: 999px;
+    background-color: var(--ink);
+    color: var(--tint);
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 200ms var(--ease-out-expo);
+  }
+
+  .nf-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .nf-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 4px;
+  }
+
+  @media (min-width: 900px) {
+    .nf-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+      align-items: end;
+      column-gap: 3rem;
+    }
+
+    .nf-label {
+      grid-column: 1 / -1;
+    }
+
+    .nf-copy {
+      margin: 0 0 2.5rem;
+    }
+  }
+</style>
