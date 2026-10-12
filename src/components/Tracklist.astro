@@ -1,0 +1,189 @@
+---
+const tracks = [
+  {
+    title: "Native",
+    body: "Swift and SwiftUI from top to bottom, Liquid Glass on iOS 26. There’s no web view anywhere in it.",
+  },
+  {
+    title: "Offline",
+    body: "Download albums and playlists. Your library, search, queue and favorites keep working in airplane mode.",
+  },
+  {
+    title: "Lossless",
+    body: "FLAC plays as FLAC, with a badge that says so. ReplayGain, crossfade and AirPlay are in there too.",
+  },
+  {
+    title: "Scrobbles",
+    body: "ListenBrainz built in. Lock screen and Now Playing controls behave like they should.",
+  },
+  {
+    title: "Yours",
+    body: "Open source under MPL-2.0. Nothing phones home, and anyone can read the code.",
+  },
+];
+
+const servers = ["Navidrome", "Gonic", "Airsonic", "Ampache", "any OpenSubsonic server"];
+---
+
+<section id="tracklist" class="tracklist" aria-labelledby="tracklist-title">
+  <div class="shell">
+    <div class="tl-head reveal">
+      <p class="label">side a</p>
+      <h2 id="tracklist-title" class="tl-title">What’s on it</h2>
+    </div>
+
+    <ol class="tl-list">
+      {
+        tracks.map((t, i) => (
+          <li class="tl-row reveal">
+            <span class="tl-num">A{i + 1}</span>
+            <h3 class="tl-name display">{t.title}</h3>
+            <p class="tl-body">{t.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="tl-servers reveal">
+      <span class="label">plays from</span>
+      <span class="tl-server-list">
+        {servers.map((s) => <span>{s}</span>)}
+      </span>
+    </p>
+  </div>
+</section>
+
+<style>
+  .tracklist {
+    padding-block: 2rem 6rem;
+  }
+
+  .tl-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .tl-title {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-text-tertiary);
+    text-transform: lowercase;
+  }
+
+  .tl-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tl-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 0.5rem;
+    padding: 1.25rem 0 1.5rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  /* Hover: the row takes the current color, full bleed. */
+  .tl-row::before {
+    content: "";
+    position: absolute;
+    inset: -1px -100vmax;
+    z-index: -1;
+    background-color: var(--tint);
+    opacity: 0;
+    transition: opacity 250ms ease;
+  }
+
+  .tl-row:hover {
+    color: var(--ink);
+  }
+
+  .tl-row:hover::before {
+    opacity: 1;
+  }
+
+  .tl-row:hover .tl-body,
+  .tl-row:hover .tl-num {
+    color: inherit;
+  }
+
+  .tl-num {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-text-tertiary);
+  }
+
+  .tl-name {
+    margin: 0;
+    font-size: clamp(3.5rem, 15vw, 11rem);
+  }
+
+  .tl-body {
+    grid-column: 2;
+    margin: 0.75rem 0 0;
+    max-width: 26rem;
+    font-size: 1.0625rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+    transition: color 250ms ease;
+  }
+
+  .tl-servers {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1.5rem;
+    margin: 2rem 0 0;
+  }
+
+  .tl-server-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    font-size: 1.0625rem;
+    font-weight: 500;
+  }
+
+  .tl-server-list span + span::before {
+    content: "/";
+    margin-right: 1.25rem;
+    color: var(--color-text-tertiary);
+  }
+
+  @media (min-width: 900px) {
+    .tracklist {
+      padding-block: 3rem 9rem;
+    }
+
+    .tl-row {
+      grid-template-columns: 5rem minmax(0, 1fr) minmax(0, 24rem);
+      align-items: center;
+      padding: 0.75rem 0;
+    }
+
+    .tl-name {
+      font-size: min(10.5vw, 11rem);
+      padding-top: 0.08em;
+    }
+
+    .tl-body {
+      grid-column: 3;
+      margin: 0;
+    }
+  }
+
+  .tracklist {
+    position: relative;
+    isolation: isolate;
+    overflow-x: clip;
+  }
+</style>

@@ -1,65 +1,125 @@
 ---
 const currentYear = new Date().getFullYear();
-const logoUrl = `${import.meta.env.BASE_URL}/images/cassette-icon-1024.png`.replace(/\/+/g, "/");
+
+const links = [
+  { label: "GitHub", href: "https://github.com/CassetteLab/cassette", external: true },
+  { label: "SwiftSonic", href: "https://cassettelab.github.io/swiftsonic-doc/", external: true },
+  { label: "Contact", href: "/contact", external: false },
+  { label: "Mathieu Dubart", href: "https://mathieu-dubart.fr", external: true },
+];
 ---
 
-<footer class="border-t border-border-subtle bg-bg-primary">
-  <div class="mx-auto w-full max-w-7xl px-6 py-12 sm:px-8">
-    <div class="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
-      <a href="#" class="inline-flex items-center gap-2 text-base font-semibold tracking-tight text-text-primary" aria-label="Cassette home">
-        <img
-          src={logoUrl}
-          alt=""
-          width="32"
-          height="32"
-          loading="lazy"
-          decoding="async"
-          class="h-8 w-8 rounded-lg"
-        />
-        <span>Cassette</span>
-      </a>
+<footer class="footer">
+  <div class="shell">
+    <div class="footer-top">
+      <p class="footer-line">
+        A <a href="https://github.com/CassetteLab" rel="noopener" target="_blank">CassetteLab</a> project, started by
+        <a href="https://mathieu-dubart.fr" rel="noopener" target="_blank">Mathieu Dubart</a>.
+      </p>
 
       <nav aria-label="Footer">
-        <ul class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-text-secondary">
-          <li>
-            <a
-              href="https://github.com/CassetteLab/cassette"
-              rel="noopener"
-              target="_blank"
-              class="transition-colors hover:text-text-primary">GitHub</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://mathieu-dubart.fr"
-              rel="noopener"
-              target="_blank"
-              class="transition-colors hover:text-text-primary">Made by Mathieu Dubart</a
-            >
-          </li>
-          <li>
-            <a
-              href="https://cassettelab.github.io/swiftsonic-doc/"
-              rel="noopener"
-              target="_blank"
-              class="transition-colors hover:text-text-primary">SwiftSonic</a
-            >
-          </li>
-          <li>
-            <a
-              href="/contact"
-              class="transition-colors hover:text-text-primary">Contact</a
-            >
-          </li>
-          <li>
-          </li>
+        <ul class="footer-links">
+          {
+            links.map((l) => (
+              <li>
+                <a href={l.href} {...(l.external ? { rel: "noopener", target: "_blank" } : {})}>
+                  {l.label}
+                  {l.external && " ↗"}
+                </a>
+              </li>
+            ))
+          }
         </ul>
       </nav>
     </div>
 
-    <div class="mt-10 flex flex-col items-start justify-between gap-2 border-t border-border-subtle pt-8 text-xs text-text-tertiary md:flex-row md:items-center">
-      <p>Built by Mathieu Dubart</p>
+    <p class="footer-word display" aria-hidden="true">Cassette</p>
+
+    <div class="footer-bottom">
       <p>© {currentYear} · Open source under MPL-2.0</p>
+      <p>No cookies, no analytics on this site either.</p>
     </div>
   </div>
 </footer>
+
+<style>
+  .footer {
+    padding-top: 4rem;
+    border-top: 1px solid var(--color-border-subtle);
+    overflow: clip;
+  }
+
+  .footer-top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .footer-line {
+    margin: 0;
+    max-width: 26rem;
+    font-size: 1.125rem;
+    line-height: 1.45;
+  }
+
+  .footer-line a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .footer-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.25rem;
+  }
+
+  .footer-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 0.625rem;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    color: var(--color-text-secondary);
+    transition: color 150ms ease;
+  }
+
+  .footer-links a:hover {
+    color: var(--color-text-primary);
+  }
+
+  .footer-word {
+    margin: 4rem 0 0;
+    font-size: 26.6vw;
+    line-height: 0.78;
+    text-align: center;
+    color: var(--tint);
+    user-select: none;
+  }
+
+  .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding: 1.5rem 0 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
+  }
+
+  .footer-bottom p {
+    margin: 0;
+  }
+
+  @media (min-width: 768px) {
+    .footer-word {
+      font-size: min(28.4vw, 25.5rem);
+    }
+  }
+</style>
