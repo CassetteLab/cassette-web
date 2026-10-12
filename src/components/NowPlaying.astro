@@ -21,13 +21,12 @@
     <img class="np-cover" data-np-cover alt="" width="44" height="44" crossorigin="anonymous" />
   </span>
   <span class="np-text">
-    <span class="np-label"><span class="np-dot" aria-hidden="true"></span>playing now on my server</span>
+    <span class="np-label"><span class="np-dot" aria-hidden="true"></span>playing on my cassette</span>
     <span class="np-track">
       <span class="np-title" data-np-title></span>
       <span class="np-artist" data-np-artist></span>
     </span>
   </span>
-  <span class="np-via" data-np-via></span>
 </button>
 <span id="np-hint" class="sr-only">Paints the page with this cover's color.</span>
 
@@ -36,7 +35,7 @@
     all: unset;
     box-sizing: border-box;
     display: inline-grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     gap: 0.75rem;
     max-width: 100%;
@@ -128,26 +127,9 @@
     content: "— ";
   }
 
-  .np-via {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    opacity: 0.75;
-    white-space: nowrap;
-  }
-
-  .np-via:empty {
-    display: none;
-  }
-
   @keyframes np-pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.25; }
-  }
-
-  @media (max-width: 480px) {
-    .np-via {
-      display: none;
-    }
   }
 </style>
 
@@ -164,14 +146,12 @@
     artist?: string;
     coverArt?: string;
     minutesAgo?: number;
-    playerName?: string;
   };
 
   const pill = document.querySelector<HTMLButtonElement>("[data-np]");
   const img = document.querySelector<HTMLImageElement>("[data-np-cover]");
   const titleEl = document.querySelector<HTMLElement>("[data-np-title]");
   const artistEl = document.querySelector<HTMLElement>("[data-np-artist]");
-  const viaEl = document.querySelector<HTMLElement>("[data-np-via]");
 
   /* Dominant color of the cover, same idea as the app's extractor:
      average the pixels, weighting saturated ones more so a colorful
@@ -246,14 +226,13 @@
   };
 
   const render = (e: Entry | null) => {
-    if (!pill || !titleEl || !artistEl || !viaEl || !img) return;
+    if (!pill || !titleEl || !artistEl || !img) return;
     if (!e) {
       pill.hidden = true;
       return;
     }
     titleEl.textContent = e.title ?? "";
     artistEl.textContent = e.artist ?? "";
-    viaEl.textContent = e.playerName ? `via ${e.playerName}` : "";
     if (e.coverArt !== shownCover) {
       shownCover = e.coverArt;
       color = null;
