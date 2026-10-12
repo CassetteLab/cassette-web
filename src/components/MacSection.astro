@@ -1,0 +1,121 @@
+---
+import { Image } from "astro:assets";
+import library from "../assets/screens/mac-library.png";
+import player from "../assets/screens/mac-player.png";
+import album from "../assets/screens/mac-album.png";
+import wrapped from "../assets/screens/mac-wrapped.png";
+
+const shots = [
+  { img: player, alt: "Cassette's full-screen player on Mac, with synced lyrics next to the cover." },
+  { img: album, alt: "An album page in Cassette on Mac, with the sidebar and the mini player." },
+  { img: wrapped, alt: "Cassette's listening recap on Mac: minutes listened and top artists." },
+];
+---
+
+<section id="mac" class="mac" aria-labelledby="mac-title">
+  <div class="shell">
+    <div class="mac-head">
+      <p class="label reveal">side b</p>
+      <h2 id="mac-title" class="mac-title display reveal">Also on Mac</h2>
+      <p class="mac-body reveal">
+        Same app, built for the desktop: a sidebar, keyboard shortcuts, a mini player that stays put. It ships as a notarized download through Homebrew, outside the Mac App Store.
+      </p>
+    </div>
+
+    <figure class="mac-hero reveal">
+      <Image
+        src={library}
+        alt="Cassette's library on Mac: recently added and recently played albums in a grid, sidebar on the left."
+        widths={[640, 960, 1440, 1920]}
+        sizes="(min-width: 1536px) 1456px, calc(100vw - 2rem)"
+        loading="lazy"
+      />
+    </figure>
+
+    <ul class="mac-row">
+      {
+        shots.map((s, i) => (
+          <li class="reveal" style={`--delay: ${i * 80}ms`}>
+            <Image src={s.img} alt={s.alt} widths={[480, 720, 960]} sizes="(min-width: 900px) 31vw, 100vw" loading="lazy" />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .mac {
+    padding-block: 3rem 6rem;
+  }
+
+  .mac-head {
+    display: grid;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .mac-title {
+    margin: 0.5rem 0 0;
+    font-size: clamp(4rem, 17vw, 14rem);
+  }
+
+  .mac-body {
+    margin: 0;
+    max-width: 30rem;
+    font-size: 1.125rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+  }
+
+  .mac-hero {
+    max-width: 76rem;
+    margin: 3rem auto 0;
+  }
+
+  .mac-hero img,
+  .mac-row img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .mac-row {
+    list-style: none;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    display: none;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 900px) {
+    .mac {
+      padding-block: 4rem 9rem;
+    }
+
+    .mac-head {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+      align-items: end;
+      column-gap: 2rem;
+    }
+
+    .mac-head .label {
+      grid-column: 1 / -1;
+    }
+
+    .mac-title {
+      font-size: min(14vw, 15rem);
+    }
+
+    .mac-body {
+      padding-bottom: 1rem;
+    }
+
+    .mac-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

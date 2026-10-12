@@ -1,0 +1,283 @@
+---
+/*
+ * Live "now playing" pill: what's playing on Mathieu's Navidrome right now.
+ *
+ * Data comes from the same nginx proxy the portfolio uses
+ * (mathieu-dubart.fr/api/now-playing + /api/cover-art). No credentials ever
+ * touch this repo or the browser: the proxy holds them.
+ *
+ * - In dev, Vite proxies /api/* to that origin (see astro.config.mjs), so it
+ *   works locally with no CORS setup.
+ * - In production the page is on another origin (getcassette.app), so the
+ *   proxy has to answer with Access-Control-Allow-Origin for this site.
+ *
+ * Purely additive: no JS, a failed fetch, or nothing playing = the pill stays
+ * hidden and the page is unchanged.
+ */
+---
+
+<button type="button" class="np" data-np hidden aria-describedby="np-hint">
+  <span class="np-cover-slot" aria-hidden="true">
+    <img class="np-cover" data-np-cover alt="" width="44" height="44" crossorigin="anonymous" />
+  </span>
+  <span class="np-text">
+    <span class="np-label"><span class="np-dot" aria-hidden="true"></span>playing now on my server</span>
+    <span class="np-track">
+      <span class="np-title" data-np-title></span>
+      <span class="np-artist" data-np-artist></span>
+    </span>
+  </span>
+  <span class="np-via" data-np-via></span>
+</button>
+<span id="np-hint" class="sr-only">Paints the page with this cover's color.</span>
+
+<style>
+  .np {
+    all: unset;
+    box-sizing: border-box;
+    display: inline-grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+    padding: 0.375rem 0.875rem 0.375rem 0.375rem;
+    border-radius: 14px;
+    box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--ink) 35%, transparent);
+    color: var(--ink);
+    cursor: pointer;
+    transition: box-shadow 200ms ease, background-color 200ms ease;
+  }
+
+  .np[hidden] {
+    display: none;
+  }
+
+  .np:hover,
+  .np[aria-pressed="true"] {
+    box-shadow: inset 0 0 0 1.5px var(--ink);
+    background-color: color-mix(in srgb, var(--ink) 10%, transparent);
+  }
+
+  .np:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+  }
+
+  .np-cover-slot {
+    width: 44px;
+    height: 44px;
+    border-radius: 9px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--ink) 15%, transparent);
+  }
+
+  .np-cover {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .np-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 0.125rem;
+  }
+
+  .np-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    opacity: 0.75;
+  }
+
+  .np-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: np-pulse 1.6s ease-in-out infinite;
+  }
+
+  .np-track {
+    display: flex;
+    gap: 0.4rem;
+    min-width: 0;
+    font-size: 0.9375rem;
+    line-height: 1.25;
+    white-space: nowrap;
+  }
+
+  .np-title {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .np-artist {
+    opacity: 0.75;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .np-artist:not(:empty)::before {
+    content: "— ";
+  }
+
+  .np-via {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    opacity: 0.75;
+    white-space: nowrap;
+  }
+
+  .np-via:empty {
+    display: none;
+  }
+
+  @keyframes np-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.25; }
+  }
+
+  @media (max-width: 480px) {
+    .np-via {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const ORIGIN = import.meta.env.DEV ? "" : "https://mathieu-dubart.fr";
+  const ENDPOINT = `${ORIGIN}/api/now-playing`;
+  const COVER = (id: string) => `${ORIGIN}/api/cover-art?id=${encodeURIComponent(id)}`;
+  const POLL_MS = 10_000;
+  /* Subsonic keeps recent plays around; older than this isn't "now". */
+  const FRESH_MINUTES = 5;
+
+  type Entry = {
+    title?: string;
+    artist?: string;
+    coverArt?: string;
+    minutesAgo?: number;
+    playerName?: string;
+  };
+
+  const pill = document.querySelector<HTMLButtonElement>("[data-np]");
+  const img = document.querySelector<HTMLImageElement>("[data-np-cover]");
+  const titleEl = document.querySelector<HTMLElement>("[data-np-title]");
+  const artistEl = document.querySelector<HTMLElement>("[data-np-artist]");
+  const viaEl = document.querySelector<HTMLElement>("[data-np-via]");
+
+  /* Dominant color of the cover, same idea as the app's extractor:
+     average the pixels, weighting saturated ones more so a colorful
+     cover doesn't come out grey. Returns null if the canvas is tainted
+     (cover served without CORS) — then the pill still shows, it just
+     can't recolor the page. */
+  const coverColor = (image: HTMLImageElement): { tint: string; ink: string } | null => {
+    try {
+      const size = 24;
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = size;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) return null;
+      ctx.drawImage(image, 0, 0, size, size);
+      const { data } = ctx.getImageData(0, 0, size, size);
+      let r = 0, g = 0, b = 0, total = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const pr = data[i], pg = data[i + 1], pb = data[i + 2];
+        const max = Math.max(pr, pg, pb), min = Math.min(pr, pg, pb);
+        const w = 0.15 + (max === 0 ? 0 : (max - min) / max);
+        r += pr * w; g += pg * w; b += pb * w; total += w;
+      }
+      r = Math.round(r / total); g = Math.round(g / total); b = Math.round(b / total);
+      const lin = (c: number) => {
+        const s = c / 255;
+        return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+      };
+      const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+      // Pick whichever ink has more contrast (WCAG).
+      const ink = (L + 0.05) / 0.05 > 1.05 / (L + 0.05) ? "#0b0b0c" : "#ffffff";
+      const hex = (n: number) => n.toString(16).padStart(2, "0");
+      return { tint: `#${hex(r)}${hex(g)}${hex(b)}`, ink };
+    } catch {
+      return null;
+    }
+  };
+
+  let shownCover: string | undefined;
+  let color: { tint: string; ink: string } | null = null;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  img?.addEventListener("load", () => {
+    color = coverColor(img);
+    // Already painted with the previous cover? Follow the new one.
+    if (pill?.getAttribute("aria-pressed") === "true" && color) {
+      window.dispatchEvent(new CustomEvent("hero:hold", { detail: color }));
+    }
+  });
+
+  img?.addEventListener("error", () => {
+    img.removeAttribute("src");
+    color = null;
+  });
+
+  pill?.addEventListener("click", () => {
+    if (!color) return;
+    pill.setAttribute("aria-pressed", "true");
+    window.dispatchEvent(new CustomEvent("hero:hold", { detail: color }));
+  });
+
+  // The hero clears "pressed" when someone picks a screen again.
+  window.addEventListener("hero:release", () => pill?.setAttribute("aria-pressed", "false"));
+
+  const fetchNow = async (): Promise<Entry | null> => {
+    const res = await fetch(ENDPOINT, { cache: "no-store" });
+    if (!res.ok || res.status === 204) return null;
+    const sub = (await res.json())?.["subsonic-response"];
+    if (sub?.status !== "ok") return null;
+    const raw = sub.nowPlaying?.entry;
+    const entries: Entry[] = Array.isArray(raw) ? raw : raw ? [raw] : [];
+    return entries.find((e) => (e.minutesAgo ?? Infinity) <= FRESH_MINUTES && e.title) ?? null;
+  };
+
+  const render = (e: Entry | null) => {
+    if (!pill || !titleEl || !artistEl || !viaEl || !img) return;
+    if (!e) {
+      pill.hidden = true;
+      return;
+    }
+    titleEl.textContent = e.title ?? "";
+    artistEl.textContent = e.artist ?? "";
+    viaEl.textContent = e.playerName ? `via ${e.playerName}` : "";
+    if (e.coverArt !== shownCover) {
+      shownCover = e.coverArt;
+      color = null;
+      if (e.coverArt) img.src = COVER(e.coverArt);
+      else img.removeAttribute("src");
+    }
+    pill.hidden = false;
+  };
+
+  const tick = async () => {
+    try {
+      render(await fetchNow());
+    } catch {
+      render(null);
+    }
+    timer = setTimeout(tick, POLL_MS);
+  };
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      clearTimeout(timer);
+      timer = undefined;
+    } else if (!timer) tick();
+  });
+
+  if (pill && !document.hidden) tick();
+</script>

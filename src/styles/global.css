@@ -1,46 +1,68 @@
 @import "tailwindcss";
 
-@import "@fontsource-variable/inter/index.css";
+@import "@fontsource/anton/400.css";
+@import "@fontsource-variable/geist/index.css";
+@import "@fontsource-variable/jetbrains-mono/index.css";
+
+/*
+ * ── The tint ────────────────────────────────────────────────
+ * Cassette themes its UI with the dominant color of whatever is playing.
+ * The site does the same: the hero rotates through real app screens and
+ * writes that screen's color into --tint / --ink on <html>. Everything
+ * that wants "the current color" reads these two variables.
+ * Registered so the browser can interpolate them (smooth crossfade).
+ */
+@property --tint {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #c1121f;
+}
+
+@property --ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
 
 @theme {
-  --color-bg-primary:    #0F0D1A;
-  --color-bg-secondary:  #1A1728;
-  --color-bg-tertiary:   #231F35;
+  /* Ground: neutral, not violet. The color comes from the music. */
+  --color-bg-primary: #0b0b0c;
+  --color-bg-secondary: #131314;
+  --color-bg-tertiary: #1c1c1e;
 
-  --color-accent-primary: #6C47F5;
-  --color-accent-hover:   #5530D4;
-  --color-accent-soft:    #221E38;
-  --color-accent-bright:  #8060F7;
-  --color-accent-fg:      #9F86FA;
+  /* Kept for the contact page: accent follows the tint. */
+  --color-accent-primary: var(--tint);
+  --color-accent-hover: var(--tint);
+  --color-accent-soft: #1c1c1e;
+  --color-accent-bright: var(--tint);
+  --color-accent-fg: var(--tint);
 
-  --color-text-primary:   #F0EEF8;
-  --color-text-secondary: #8C7DB8;
-  --color-text-tertiary:  #5E5080;
+  --color-text-primary: #f2f0eb;
+  --color-text-secondary: #a19f9a;
+  --color-text-tertiary: #6b6a67;
 
-  --color-border-subtle: rgba(108, 71, 245, 0.22);
+  --color-border-subtle: rgba(242, 240, 235, 0.12);
 
-  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono", "Geist Mono", ui-monospace, SFMono-Regular,
-    Menlo, monospace;
+  /* Display face is a placeholder until the final one is picked. */
+  --font-display: "Anton", "Impact", "Haettenschweiler", "Arial Narrow Bold", sans-serif;
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --tracking-tight: -0.02em;
-  --leading-relaxed: 1.65;
-
-  --shadow-violet-sm: 0 4px 16px -4px rgb(108 71 245 / 0.15),
-    0 2px 6px -2px rgb(15 13 26 / 0.2);
-  --shadow-violet-md: 0 12px 36px -8px rgb(108 71 245 / 0.25),
-    0 6px 16px -4px rgb(15 13 26 / 0.3);
-  --shadow-violet-lg: 0 28px 64px -16px rgb(108 71 245 / 0.35),
-    0 12px 28px -8px rgb(15 13 26 / 0.4);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @layer base {
   html {
+    --tint: #c1121f;
+    --ink: #ffffff;
+    transition:
+      --tint 900ms cubic-bezier(0.4, 0, 0.2, 1),
+      --ink 900ms cubic-bezier(0.4, 0, 0.2, 1);
     overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    background-color: var(--color-bg-primary);
   }
 
   body {
@@ -49,130 +71,80 @@
     color: var(--color-text-primary);
     font-family: var(--font-sans);
     font-size: 1.0625rem;
-    line-height: 1.65;
+    line-height: 1.55;
   }
 
   ::selection {
-    background-color: var(--color-accent-primary);
-    color: var(--color-bg-primary);
+    background-color: var(--tint);
+    color: var(--ink);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-accent-primary);
+    outline: 2px solid currentColor;
     outline-offset: 3px;
-    border-radius: 2px;
+  }
+
+  a {
+    color: inherit;
   }
 }
 
-/* ── Scroll-triggered reveal (transition-based) ─────────── */
+@layer components {
+  /* Small mono label used above sections ("side a", "proof"…) */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    color: var(--color-text-tertiary);
+  }
+
+  /* Huge condensed display type */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 0.86;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  .shell {
+    width: 100%;
+    max-width: 96rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .shell {
+      padding-inline: 2.5rem;
+    }
+  }
+}
+
+/* ── Scroll reveal ──────────────────────────────────────────── */
 @layer utilities {
-  /* Standard elements: 32px lift, 600ms expo-out */
   .reveal {
     opacity: 0;
-    transform: translateY(32px);
+    transform: translateY(28px);
     transition:
-      opacity  600ms cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0ms),
-      transform 600ms cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0ms);
+      opacity 700ms var(--ease-out-expo) var(--delay, 0ms),
+      transform 700ms var(--ease-out-expo) var(--delay, 0ms);
   }
 
   .reveal.is-visible {
     opacity: 1;
     transform: none;
   }
-
-  /* Device mockups: heavier entrance — 48px lift, 800ms */
-  .reveal-device {
-    opacity: 0;
-    transform: translateY(48px);
-    transition:
-      opacity  800ms cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0ms),
-      transform 800ms cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0ms);
-  }
-
-  .reveal-device.is-visible {
-    opacity: 1;
-    transform: none;
-  }
-
-  .reveal-delay-100 { transition-delay: 100ms; }
-  .reveal-delay-200 { transition-delay: 200ms; }
-  .reveal-delay-300 { transition-delay: 300ms; }
-  .reveal-delay-400 { transition-delay: 400ms; }
 }
 
-/* ── Line-mask utility (scroll-triggered) ───────────────── */
-/* Wrap a heading in .lm, put text in .lm-i.
-   When parent gains .is-visible, text slides up from the mask. */
-.lm {
-  display: block;
-  overflow: hidden;
-  padding-bottom: 0.06em; /* prevent descender clipping */
-}
-
-.lm-i {
-  display: block;
-  transform: translateY(112%);
-  transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.is-visible .lm-i,
-.lm-i.is-visible {
-  transform: none;
-}
-
-/* Stagger helpers for multi-line headings */
-.lm-i[data-line="1"] { transition-delay: 0ms;   }
-.lm-i[data-line="2"] { transition-delay: 120ms;  }
-.lm-i[data-line="3"] { transition-delay: 240ms;  }
-
-/* ── Hero keyframes (animation-based, above-fold) ──────── */
-@keyframes line-up {
-  from { transform: translateY(108%); }
-  to   { transform: translateY(0); }
-}
-
-@keyframes blur-in {
-  from { opacity: 0; filter: blur(10px); transform: translateY(10px); }
-  to   { opacity: 1; filter: blur(0px);  transform: none; }
-}
-
-@keyframes spring-in {
-  0%   { opacity: 0; transform: scale(0.86) translateY(14px); }
-  60%  { transform: scale(1.04) translateY(-2px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-@keyframes phone-entrance {
-  from { opacity: 0; transform: scale(0.88) translateY(36px); }
-  to   { opacity: 1; transform: none; }
-}
-
-@keyframes hero-halo-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* ── Light theme ────────────────────────────────────────── */
-@media (prefers-color-scheme: light) {
-  :root {
-    --color-bg-primary:    #FFFFFF;
-    --color-bg-secondary:  #F5F3FF;
-    --color-bg-tertiary:   #EDE8FF;
-
-    --color-accent-soft:   #EDE8FF;
-    --color-accent-fg:     #5530D4;
-
-    --color-text-primary:   #0F0D1A;
-    --color-text-secondary: #4A3D78;
-    --color-text-tertiary:  #7060A0;
-
-    --color-border-subtle: rgba(108, 71, 245, 0.18);
-  }
-}
-
-/* ── Reduced motion ─────────────────────────────────────── */
+/* ── Reduced motion ─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+  html {
+    scroll-behavior: auto;
+    transition: none;
+  }
 
   *,
   *::before,
@@ -180,10 +152,10 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
 
-  .reveal,
-  .reveal-device { opacity: 1; transform: none; }
-  .lm-i          { transform: none; }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }

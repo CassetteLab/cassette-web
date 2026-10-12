@@ -1,329 +1,479 @@
 ---
-import HeroPlatformSwitcher from "./HeroPlatformSwitcher.astro";
-import MacInstall from "./MacInstall.astro";
+import { Image } from "astro:assets";
+import { heroScreens } from "../data/screens";
+import NowPlaying from "./NowPlaying.astro";
 
-const githubUrl = "https://github.com/CassetteLab/cassette";
-const base = import.meta.env.BASE_URL;
-const iphoneScreenshot = `${base}/images/header.png`.replace(/\/+/g, "/");
-const macScreenshot = `${base}/images/header_mac.png`.replace(/\/+/g, "/");
+const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
+const first = heroScreens[0];
 ---
 
-<section class="hero-section">
-
-  <div class="hero-bg" aria-hidden="true">
-    <div class="hero-grid"></div>
-    <div class="hero-grain"></div>
-    <div class="glow-a"></div>
-    <div class="glow-b"></div>
-  </div>
-
-  <!-- Text content — vertically centered in upper portion of 100svh -->
-  <div class="hero-content">
-
-    <h1 class="hero-heading fade-up" style="--d: 0.08s">
-      Your music,<br>
-      your server,<br>
-      <span class="hero-accent">your app.</span>
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <div class="hero-stage shell">
+    <h1 id="hero-title" class="hero-word display">
+      <span aria-hidden="true">Cassette</span>
+      <span class="sr-only">
+        Cassette, a native iOS and macOS music player for Navidrome, Subsonic and OpenSubsonic servers
+      </span>
     </h1>
 
-    <p class="hero-subtitle fade-up" style="--d: 0.16s">
-      Cassette is a native iOS and macOS client for Subsonic and OpenSubsonic.
-      Beautiful, fast, and built for people who self-host.
-    </p>
-
-    <div class="hero-actions fade-up" style="--d: 0.22s">
-      <a
-        href="https://testflight.apple.com/join/pxCpfpxF"
-        rel="noopener"
-        target="_blank"
-        class="btn-primary"
-      >
-        <svg viewBox="0 0 24 24" fill="currentColor" class="btn-icon" aria-hidden="true">
-          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-        </svg>
-        TestFlight
-      </a>
-
-      <!-- Secondary link — underline style, no ghost button -->
-      <a
-        href={githubUrl}
-        rel="noopener"
-        target="_blank"
-        class="btn-link"
-      >
-        <svg viewBox="0 0 24 24" fill="currentColor" class="btn-icon" aria-hidden="true">
-          <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.082-.73.082-.73 1.205.085 1.838 1.236 1.838 1.236 1.07 1.835 2.81 1.305 3.495.998.108-.776.418-1.305.762-1.605-2.665-.305-5.467-1.332-5.467-5.93 0-1.31.467-2.38 1.236-3.22-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.3 1.23a11.5 11.5 0 0 1 3.003-.404c1.02.005 2.047.138 3.005.404 2.29-1.552 3.297-1.23 3.297-1.23.654 1.652.243 2.873.12 3.176.77.84 1.235 1.91 1.235 3.22 0 4.61-2.807 5.62-5.48 5.92.43.37.82 1.103.82 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.594 24 12.297c0-6.627-5.373-12-12-12"/>
-        </svg>
-        View on GitHub
-      </a>
+    <div class="hero-phone" data-hero-phone>
+      {
+        heroScreens.map((s, i) => (
+          <Image
+            src={s.img}
+            alt={s.alt}
+            widths={[320, 480, 720, 960]}
+            sizes="(min-width: 768px) 44vh, 64vw"
+            class:list={["phone-img", { "is-active": i === 0 }]}
+            loading={i === 0 ? "eager" : "lazy"}
+            fetchpriority={i === 0 ? "high" : "auto"}
+            decoding={i === 0 ? "sync" : "async"}
+            data-screen={i}
+            aria-hidden={i === 0 ? undefined : "true"}
+          />
+        ))
+      }
     </div>
 
-    <!-- macOS install — Homebrew, with copy-to-clipboard -->
-    <MacInstall />
+    <div class="hero-intro">
+      <NowPlaying />
+      <p class="hero-lede">
+        A native iPhone and Mac app for the music on your own server.
+      </p>
+      <p class="hero-sub">
+        Built for Navidrome, and for anything else that speaks Subsonic. Free and open source.
+      </p>
 
+      <div class="hero-cta">
+        <a class="btn-solid" href={testflightUrl} rel="noopener" target="_blank">
+          Join the beta
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" /></svg>
+        </a>
+        <a class="btn-line" href="#install">Get it on Mac</a>
+      </div>
+    </div>
+
+    <div class="hero-deck" data-hero-deck>
+      <p class="deck-label">on screen</p>
+      <ol class="deck-list">
+        {
+          heroScreens.map((s, i) => (
+            <li>
+              <button
+                type="button"
+                class="deck-item"
+                data-screen-btn={i}
+                data-tint={s.tint}
+                data-ink={s.ink}
+                aria-pressed={i === 0 ? "true" : "false"}
+              >
+                <span class="deck-num">{String(i + 1).padStart(2, "0")}</span>
+                <span class="deck-text">
+                  <span class="deck-title">{s.title}</span>
+                  <span class="deck-by">{s.by}</span>
+                </span>
+                <span class="deck-bar" aria-hidden="true"><span /></span>
+              </button>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
   </div>
-
-  <!-- Device mockup — sits at bottom, naturally emerges past the fold -->
-  <div class="hero-phone fade-up" style="--d: 0.1s">
-    <HeroPlatformSwitcher
-      iphoneScreenshot={iphoneScreenshot}
-      iphoneAlt="Cassette app on iPhone — home screen"
-      macScreenshot={macScreenshot}
-      macAlt="Cassette app on Mac — main window"
-    />
-  </div>
-
 </section>
 
 <style>
-  /* ── Section ─────────────────────────────────────────── */
-  /* 100svh, flex-column: text takes flex:1 (centered), phone sits below */
-  .hero-section {
+  .hero {
     position: relative;
     isolation: isolate;
-    min-height: 100svh;
-    overflow-x: clip;
-    display: flex;
-    flex-direction: column;
-    /* Soft radial from AccentSoft at the top — depth without flash */
-    background: radial-gradient(
-      ellipse 70% 55% at 50% 0%,
-      rgba(34, 30, 56, 0.75) 0%,
-      transparent 65%
-    );
+    background-color: var(--tint);
+    color: var(--ink);
+    overflow: clip;
   }
 
-  /* ── Background ──────────────────────────────────────── */
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
+  .hero-stage {
+    max-width: none;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    padding-top: 5.5rem;
+    padding-bottom: 2.5rem;
+    row-gap: 2rem;
   }
 
-  .hero-grid {
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
-    background-size: 36px 36px;
-    opacity: 0;
-    animation: fade-in-bg 1.6s ease-out 0.2s forwards;
-  }
-
-  .hero-grain {
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><filter id='g'><feTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='256' height='256' filter='url(%23g)' opacity='1'/></svg>");
-    background-size: 220px 220px;
-    opacity: 0.032;
-    mix-blend-mode: overlay;
-  }
-
-  .glow-a {
-    position: absolute;
-    top: -20%;
-    right: -8%;
-    width: clamp(420px, 58vw, 780px);
-    height: clamp(340px, 50vw, 660px);
-    background: radial-gradient(circle at 38% 42%, rgba(108, 71, 245, 0.38) 0%, transparent 60%);
-    filter: blur(72px);
-    will-change: transform;
-    animation: breathe 38s ease-in-out infinite;
-  }
-
-  .glow-b {
-    position: absolute;
-    bottom: 2%;
-    left: -8%;
-    width: clamp(320px, 44vw, 560px);
-    height: clamp(320px, 44vw, 560px);
-    background: radial-gradient(circle at 55% 52%, rgba(128, 96, 247, 0.22) 0%, transparent 65%);
-    filter: blur(80px);
-  }
-
-  @keyframes breathe {
-    0%, 100% { transform: scale(1) translate(0, 0); }
-    50%       { transform: scale(1.07) translate(-18px, 16px); }
-  }
-
-  @keyframes fade-in-bg {
-    to { opacity: 1; }
-  }
-
-  /* ── Text content area ───────────────────────────────── */
-  /* flex:1 so it fills remaining space; justify-content centers text vertically */
-  .hero-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 7rem 1.5rem 2rem;   /* 7rem clears the fixed nav */
-    max-width: 62rem;
-    margin-inline: auto;
+  /* ── The word ─────────────────────────────────────────── */
+  .hero-word {
+    margin: 0;
     width: 100%;
+    font-size: 26.6vw;
+    text-align: center;
+    line-height: 0.8;
+    z-index: 0;
+    user-select: none;
   }
 
-  @media (min-width: 640px) {
-    .hero-content { padding-inline: 2rem; }
+  /* ── The phone ────────────────────────────────────────── */
+  .hero-phone {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: min(64vw, 22rem);
+    margin-top: -16vw;
+    aspect-ratio: 1510 / 3040;
+    filter: drop-shadow(0 40px 50px rgb(0 0 0 / 0.32));
   }
 
-  /* ── Heading ─────────────────────────────────────────── */
-  /* Bumped to spec: clamp(48px, 8vw, 96px), tighter line-height */
-  .hero-heading {
-    font-size: clamp(3rem, 8vw, 6rem);
-    font-weight: 700;
-    line-height: 1.0;
-    letter-spacing: -0.04em;
-    color: var(--color-text-primary);
-    margin: 0 0 1.5rem;
+  .phone-img {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+    transition:
+      opacity 600ms var(--ease-out-expo),
+      transform 900ms var(--ease-out-expo);
   }
 
-  .hero-accent {
-    background: linear-gradient(135deg, #9D85FF 0%, #C8BAFF 45%, #EDE8FF 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  .phone-img.is-active {
+    opacity: 1;
+    transform: none;
   }
 
-  /* ── Subtitle ────────────────────────────────────────── */
-  /* clamp(18px, 2.5vw, 24px), centered via margin-inline auto */
-  .hero-subtitle {
-    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
-    font-weight: 400;
-    line-height: 1.55;
-    color: var(--color-text-secondary);
-    max-width: 32.5rem;    /* ~520px */
-    margin: 0 auto 2.5rem;
+  /* ── Intro + CTAs ─────────────────────────────────────── */
+  .hero-intro {
+    width: 100%;
+    max-width: 30rem;
+    justify-self: start;
   }
 
-  /* ── Actions ─────────────────────────────────────────── */
-  .hero-actions {
+  .hero-lede {
+    margin: 0;
+    font-size: 1.625rem;
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .hero-sub {
+    margin: 0.75rem 0 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    opacity: 0.8;
+    max-width: 26rem;
+  }
+
+  .hero-cta {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
-    align-items: center;
-    justify-content: center;
+    gap: 0.625rem;
+    margin-top: 1.5rem;
   }
 
-  /* ── Primary CTA ─────────────────────────────────────── */
-  /* 14px radius (Apple sweet spot), 52px min-height, weight 600 */
-  .btn-primary {
+  .btn-solid,
+  .btn-line {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.875rem 1.75rem;
-    min-height: 52px;
-    border-radius: 0.875rem;
+    min-height: 48px;
+    padding: 0 1.25rem;
+    border-radius: 999px;
     font-size: 0.9375rem;
     font-weight: 600;
+    letter-spacing: -0.01em;
     text-decoration: none;
-    background-color: var(--color-accent-primary);
-    color: #fff;
-    box-shadow: 0 4px 16px rgba(108, 71, 245, 0.38);
-    transition: background-color 180ms ease-out, box-shadow 180ms ease-out, transform 180ms ease-out;
+    transition: transform 200ms var(--ease-out-expo), background-color 200ms ease, color 200ms ease;
   }
 
-  .btn-icon {
-    width: 1.125rem;
-    height: 1.125rem;
-    flex-shrink: 0;
+  .btn-solid {
+    background-color: var(--ink);
+    color: var(--tint);
   }
 
-  .btn-primary:hover {
-    background-color: var(--color-accent-hover);
-    box-shadow: 0 6px 28px rgba(108, 71, 245, 0.6);
+  .btn-solid svg {
+    width: 0.875rem;
+    height: 0.875rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .btn-line {
+    box-shadow: inset 0 0 0 1.5px var(--ink);
+    color: var(--ink);
+  }
+
+  .btn-solid:hover,
+  .btn-line:hover {
     transform: translateY(-2px);
   }
 
-  .btn-primary:active { transform: none; }
-
-  /* ── Secondary link ──────────────────────────────────── */
-  /* No ghost border — underline only, AccentFg underline color */
-  .btn-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: var(--color-text-secondary);
-    text-decoration: underline;
-    text-decoration-color: var(--color-accent-fg);
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-    transition: color 150ms ease;
+  .btn-line:hover {
+    background-color: var(--ink);
+    color: var(--tint);
   }
 
-  .btn-link:hover {
-    color: var(--color-text-primary);
+  /* ── Deck (which screen is showing) ───────────────────── */
+  .hero-deck {
+    width: 100%;
+    justify-self: start;
   }
 
-  /* ── Device column ───────────────────────────────────── */
-  /* Flush to bottom of section — device "emerges" past the fold */
-  .hero-phone {
+  .deck-label {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .deck-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.25rem 1rem;
+  }
+
+  .deck-item {
+    all: unset;
+    box-sizing: border-box;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.625rem;
+    width: 100%;
+    min-height: 44px;
+    padding: 0.5rem 0 0.75rem;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.35;
+    opacity: 0.55;
+    transition: opacity 200ms ease;
+  }
+
+  .deck-item:hover,
+  .deck-item[aria-pressed="true"] {
+    opacity: 1;
+  }
+
+  .deck-item:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .deck-text {
     display: flex;
-    justify-content: center;
-    padding: 2rem 1.5rem 0;
+    flex-direction: column;
+    min-width: 0;
   }
 
-  @media (min-width: 640px) {
-    .hero-phone { padding-inline: 2rem; }
+  .deck-title {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  /* ── Entrance animations (above-fold, keyframe-based) ── */
-  .fade-up {
-    animation: fade-up 0.6s ease-out var(--d, 0s) both;
+  .deck-by {
+    opacity: 0.75;
   }
 
-  @keyframes fade-up {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: none; }
+  .deck-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.25rem;
+    height: 2px;
+    background: color-mix(in srgb, currentColor 22%, transparent);
+    overflow: hidden;
+  }
+
+  .deck-bar span {
+    display: block;
+    height: 100%;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .deck-item[aria-pressed="true"] .deck-bar span {
+    transform: scaleX(1);
+  }
+
+  /* While auto-playing, the active bar fills over the dwell time. */
+  .hero[data-playing] .deck-item[aria-pressed="true"] .deck-bar span {
+    animation: deck-fill var(--dwell, 5200ms) linear both;
+  }
+
+  .hero[data-paused] .deck-item[aria-pressed="true"] .deck-bar span {
+    animation-play-state: paused;
+  }
+
+  @keyframes deck-fill {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  /* ── Desktop: the poster layout ───────────────────────── */
+  @media (min-width: 900px) and (min-height: 640px) {
+    .hero-stage {
+      display: block;
+      height: 100svh;
+      min-height: 46rem;
+      max-height: 68rem;
+      padding: 0;
+    }
+
+    .hero-word {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 6.25rem;
+      font-size: min(28.4vw, 52svh);
+    }
+
+    .hero-phone {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: auto;
+      height: calc(100% - 5.5rem);
+      margin: 0;
+      transform: translate(-50%, 9%);
+    }
+
+    .hero-intro {
+      position: absolute;
+      left: 2.5rem;
+      bottom: 2.5rem;
+      width: calc(50% - 15rem);
+      max-width: 26rem;
+    }
+
+    .hero-lede {
+      font-size: clamp(1.5rem, 2.1vw, 2rem);
+    }
+
+    .hero-deck {
+      position: absolute;
+      right: 2.5rem;
+      bottom: 2.5rem;
+      width: calc(50% - 15rem);
+      max-width: 19rem;
+    }
+
+    .deck-list {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .fade-up   { animation: none; }
-    .glow-a    { animation: none; }
-    .hero-grid { animation: none; opacity: 1; }
-  }
-
-  @media (prefers-color-scheme: light) {
-    .hero-section {
-      background: radial-gradient(
-        ellipse 70% 55% at 50% 0%,
-        rgba(108, 71, 245, 0.07) 0%,
-        transparent 65%
-      );
-    }
-
-    .hero-grid {
-      background-image: radial-gradient(circle, rgba(0, 0, 0, 0.07) 1px, transparent 1px);
-    }
-
-    .glow-a {
-      background: radial-gradient(circle at 38% 42%, rgba(108, 71, 245, 0.14) 0%, transparent 60%);
-    }
-
-    .glow-b {
-      background: radial-gradient(circle at 55% 52%, rgba(128, 96, 247, 0.08) 0%, transparent 65%);
-    }
-
-    .hero-accent {
-      background: linear-gradient(135deg, #4A2DCC 0%, #6C47F5 45%, #8060F7 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-    }
-
-    .btn-primary {
-      box-shadow: 0 4px 16px rgba(108, 71, 245, 0.28);
-    }
-
-    .btn-primary:hover {
-      box-shadow: 0 6px 28px rgba(108, 71, 245, 0.45);
-    }
-
-    .btn-link {
-      color: var(--color-text-secondary);
+    .phone-img {
+      transform: none;
     }
   }
 </style>
+
+<script>
+  const DWELL = 5200;
+
+  const initHero = () => {
+    const hero = document.querySelector<HTMLElement>("[data-hero]");
+    if (!hero || hero.dataset.bound) return;
+    hero.dataset.bound = "true";
+
+    const imgs = [...hero.querySelectorAll<HTMLImageElement>("[data-screen]")];
+    const btns = [...hero.querySelectorAll<HTMLButtonElement>("[data-screen-btn]")];
+    const root = document.documentElement;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let current = 0;
+    let playing = false;
+    let visible = false;
+    // Set while the live cover (NowPlaying) is painting the page.
+    let held = false;
+
+    hero.style.setProperty("--dwell", `${DWELL}ms`);
+
+    const restartBar = () => {
+      hero.removeAttribute("data-playing");
+      void hero.offsetWidth; // reflow so the fill animation restarts
+      if (playing) hero.setAttribute("data-playing", "");
+    };
+
+    const show = (i: number) => {
+      current = (i + imgs.length) % imgs.length;
+      imgs.forEach((img, k) => {
+        const on = k === current;
+        img.classList.toggle("is-active", on);
+        if (on) img.removeAttribute("aria-hidden");
+        else img.setAttribute("aria-hidden", "true");
+      });
+      btns.forEach((b, k) => b.setAttribute("aria-pressed", String(k === current)));
+      const { tint = "#0b0b0c", ink = "#ffffff" } = btns[current].dataset;
+      root.style.setProperty("--tint", tint);
+      root.style.setProperty("--ink", ink);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", tint);
+      restartBar();
+    };
+
+    // The progress bar is the clock: when it finishes filling, advance.
+    hero.addEventListener("animationend", (e) => {
+      if (playing && e.animationName.includes("deck-fill")) show(current + 1);
+    });
+
+    const setPlaying = (on: boolean) => {
+      visible = on;
+      playing = on && !held && !reduceMotion;
+      restartBar();
+    };
+
+    btns.forEach((b, k) =>
+      b.addEventListener("click", () => {
+        if (held) {
+          held = false;
+          window.dispatchEvent(new Event("hero:release"));
+          setPlaying(visible);
+        }
+        show(k);
+      }),
+    );
+
+    // The live cover takes over the color; rotation stops until a screen is picked.
+    window.addEventListener("hero:hold", (e) => {
+      const { tint, ink } = (e as CustomEvent<{ tint: string; ink: string }>).detail;
+      held = true;
+      setPlaying(visible);
+      btns.forEach((b) => b.setAttribute("aria-pressed", "false"));
+      root.style.setProperty("--tint", tint);
+      root.style.setProperty("--ink", ink);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", tint);
+    });
+
+    // Hovering the phone or the list holds the current screen.
+    const holders = [
+      hero.querySelector<HTMLElement>("[data-hero-phone]"),
+      hero.querySelector<HTMLElement>("[data-hero-deck]"),
+    ];
+    holders.forEach((el) => {
+      el?.addEventListener("pointerenter", () => hero.setAttribute("data-paused", ""));
+      el?.addEventListener("pointerleave", () => hero.removeAttribute("data-paused"));
+    });
+
+    // Cycle only while the hero is on screen; the last color stays on the page.
+    new IntersectionObserver(([entry]) => setPlaying(entry.isIntersecting), {
+      threshold: 0.25,
+    }).observe(hero);
+
+    show(0);
+  };
+
+  initHero();
+  document.addEventListener("astro:page-load", initHero);
+</script>

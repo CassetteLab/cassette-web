@@ -1,0 +1,202 @@
+---
+const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
+
+// macOS install commands — exact, do not alter.
+const installCommands = [
+  "brew trust CassetteLab/cassette",
+  "brew tap CassetteLab/cassette",
+  "brew install --cask cassette",
+];
+const copyText = installCommands.join("\n");
+---
+
+<section id="install" class="install" aria-labelledby="install-title">
+  <div class="shell">
+    <h2 id="install-title" class="label install-label">press play</h2>
+
+    <div class="install-grid">
+      <div class="platform reveal">
+        <h3 class="platform-name display">iPhone</h3>
+        <p class="platform-body">
+          Public beta on TestFlight. Open the link on your iPhone, install TestFlight if asked, done.
+        </p>
+        <a class="install-btn" href={testflightUrl} rel="noopener" target="_blank">
+          Join the TestFlight beta
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" /></svg>
+        </a>
+      </div>
+
+      <div class="platform reveal" style="--delay: 90ms">
+        <h3 class="platform-name display">Mac</h3>
+        <p class="platform-body">Three lines in the terminal with Homebrew. Updates come the same way.</p>
+
+        <div class="term" data-mac-install>
+          <pre class="term-code"><code>{copyText}</code></pre>
+          <button type="button" class="term-copy" aria-label="Copy install commands">
+            <span class="copy-label" aria-live="polite">Copy</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .install {
+    background-color: var(--tint);
+    color: var(--ink);
+    padding-block: 4rem 5rem;
+  }
+
+  .install-label {
+    margin: 0;
+    color: inherit;
+    opacity: 0.7;
+  }
+
+  .install-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4rem;
+    margin-top: 2rem;
+  }
+
+  .platform {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .platform-name {
+    margin: 0;
+    font-size: clamp(5rem, 22vw, 13rem);
+  }
+
+  .platform-body {
+    margin: 0;
+    max-width: 26rem;
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+
+  .install-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 52px;
+    padding: 0 1.5rem;
+    border-radius: 999px;
+    background-color: var(--ink);
+    color: var(--tint);
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 200ms var(--ease-out-expo);
+  }
+
+  .install-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .install-btn svg {
+    width: 0.875rem;
+    height: 0.875rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Terminal: always dark, whatever the tint. */
+  .term {
+    position: relative;
+    width: 100%;
+    max-width: 30rem;
+    border-radius: 14px;
+    background-color: #0b0b0c;
+    color: #f2f0eb;
+  }
+
+  .term-code {
+    margin: 0;
+    padding: 1.125rem 5.5rem 1.125rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.8;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .term-code code {
+    font-family: inherit;
+  }
+
+  .term-copy {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    min-height: 36px;
+    min-width: 64px;
+    padding: 0 0.875rem;
+    border: 0;
+    border-radius: 999px;
+    background-color: rgb(242 240 235 / 0.1);
+    color: inherit;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+  }
+
+  .term-copy:hover {
+    background-color: rgb(242 240 235 / 0.18);
+  }
+
+  @media (min-width: 900px) {
+    .install {
+      padding-block: 6rem 7rem;
+    }
+
+    .install-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2.5rem;
+    }
+  }
+</style>
+
+<script>
+  const initCopy = () => {
+    document.querySelectorAll<HTMLElement>("[data-mac-install]").forEach((root) => {
+      if (root.dataset.bound === "true") return;
+      root.dataset.bound = "true";
+
+      const btn = root.querySelector<HTMLButtonElement>(".term-copy");
+      const code = root.querySelector<HTMLElement>(".term-code");
+      const label = root.querySelector<HTMLElement>(".copy-label");
+      if (!btn || !code) return;
+
+      // What gets copied is exactly what's shown.
+      const text = code.textContent ?? "";
+      let reset: ReturnType<typeof setTimeout> | undefined;
+
+      btn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          return; // commands stay visible and selectable
+        }
+        btn.setAttribute("aria-label", "Install commands copied");
+        if (label) label.textContent = "Copied";
+        clearTimeout(reset);
+        reset = setTimeout(() => {
+          btn.setAttribute("aria-label", "Copy install commands");
+          if (label) label.textContent = "Copy";
+        }, 2000);
+      });
+    });
+  };
+
+  initCopy();
+  document.addEventListener("astro:page-load", initCopy);
+</script>
