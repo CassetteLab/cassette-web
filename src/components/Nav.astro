@@ -1,20 +1,22 @@
 ---
 const githubUrl = "https://github.com/CassetteLab/cassette";
 const logoUrl = `${import.meta.env.BASE_URL}/images/cassette-icon-1024.png`.replace(/\/+/g, "/");
-const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
+// Pages that open on a full-bleed tinted stage: the bar starts transparent there.
+const onStage = ["/", "", "/404", "/404.html"].includes(Astro.url.pathname);
 ---
 
-<header id="site-nav" class="site-nav" data-on-hero={isHome ? "" : undefined}>
+<header id="site-nav" class="site-nav" data-on-hero={onStage ? "" : undefined}>
   <div class="nav-inner shell" style="max-width: none">
     <a href="/" class="nav-logo" aria-label="Cassette home">
       <img src={logoUrl} alt="" width="28" height="28" loading="eager" decoding="sync" />
-      <span>Cassette</span>
+      <span class="nav-logo-text">Cassette</span>
     </a>
 
     <nav aria-label="Primary">
-      <a href="/#tracklist" class="nav-link hide-sm">Features</a>
+      <a href="/#tracklist" class="nav-link">Features</a>
       <a href="/#install" class="nav-link">Install</a>
-      <a href="/#faq" class="nav-link hide-sm">FAQ</a>
+      <a href="/#faq" class="nav-link">FAQ</a>
+      <a href="/contact" class="nav-link">Contact</a>
       <a href={githubUrl} rel="noopener" target="_blank" class="nav-link">GitHub ↗</a>
     </nav>
   </div>
@@ -90,9 +92,23 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
     opacity: 1;
   }
 
+  /* Phones: icon-only logo and tighter links, so every link stays reachable. */
   @media (max-width: 639px) {
-    .hide-sm {
-      display: none;
+    .nav-logo-text {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    nav {
+      gap: 0;
+    }
+
+    .nav-link {
+      padding: 0 0.5rem;
+      font-size: 0.8125rem;
     }
   }
 </style>
@@ -100,7 +116,7 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
 <script>
   const initNav = () => {
     const nav = document.getElementById("site-nav");
-    const hero = document.querySelector("[data-hero]");
+    const hero = document.querySelector("[data-hero], [data-nf]");
     if (!nav || !hero) return;
 
     new IntersectionObserver(
