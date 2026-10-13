@@ -24,7 +24,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
 // image by URL, so a new query string is what makes them fetch the new one.
 const OG_VERSION = "2";
 const ogImage = new URL(
-  `${import.meta.env.BASE_URL}/og-card.png?v=${OG_VERSION}`.replace(/\/+/g, "/"),
+  `/og-card.png?v=${OG_VERSION}`,
   Astro.site,
 ).toString();
 
@@ -53,7 +53,7 @@ const jsonLd = {
       url: canonicalURL,
       downloadUrl: "https://testflight.apple.com/join/pxCpfpxF",
       screenshot: new URL(
-        `${import.meta.env.BASE_URL}/images/header.png`.replace(/\/+/g, "/"),
+        "/images/header.png",
         Astro.site,
       ).toString(),
       featureList: [
