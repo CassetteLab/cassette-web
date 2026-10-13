@@ -27,22 +27,22 @@ const servers = ["Navidrome", "Gonic", "Airsonic", "Ampache", "any OpenSubsonic 
 
 <section id="tracklist" class="tracklist" aria-labelledby="tracklist-title">
   <div class="shell">
-    <div class="tl-head reveal">
+    <div class="tl-head" data-reveal="up">
       <h2 id="tracklist-title" class="label tl-title">Features</h2>
     </div>
 
     <ol class="tl-list">
       {
-        tracks.map((t, i) => (
-          <li class="tl-row">
-            <h3 class="tl-name display">{t.title}</h3>
-            <p class="tl-body">{t.body}</p>
+        tracks.map((t) => (
+          <li class="tl-row" data-reveal-group data-reveal-start="top 88%">
+            <h3 class="tl-name display" data-reveal="chars" data-reveal-stagger="0.025">{t.title}</h3>
+            <p class="tl-body" data-reveal="up" data-reveal-delay="0.15">{t.body}</p>
           </li>
         ))
       }
     </ol>
 
-    <p class="tl-servers reveal">
+    <p class="tl-servers" data-reveal="up">
       <span class="label">Works with</span>
       <span class="tl-server-list">
         {servers.map((s) => <span>{s}</span>)}

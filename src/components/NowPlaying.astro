@@ -16,7 +16,7 @@
  */
 ---
 
-<button type="button" class="np" data-np hidden aria-describedby="np-hint">
+<button type="button" class="np" data-np data-hero-step hidden aria-describedby="np-hint">
   <span class="np-cover-slot" aria-hidden="true">
     <img class="np-cover" data-np-cover alt="" width="44" height="44" crossorigin="anonymous" />
   </span>
@@ -134,6 +134,9 @@
 </style>
 
 <script>
+  import { emit } from "../scripts/events";
+  import { inkFor, setTint, type Tint } from "../scripts/tint";
+
   const ORIGIN = import.meta.env.DEV ? "" : "https://mathieu-dubart.fr";
   const ENDPOINT = `${ORIGIN}/api/now-playing`;
   const COVER = (id: string) => `${ORIGIN}/api/cover-art?id=${encodeURIComponent(id)}`;
@@ -158,7 +161,7 @@
      cover doesn't come out grey. Returns null if the canvas is tainted
      (cover served without CORS) — then the pill still shows, it just
      can't recolor the page. */
-  const coverColor = (image: HTMLImageElement): { tint: string; ink: string } | null => {
+  const coverColor = (image: HTMLImageElement): Tint | null => {
     try {
       const size = 24;
       const canvas = document.createElement("canvas");
@@ -175,30 +178,26 @@
         r += pr * w; g += pg * w; b += pb * w; total += w;
       }
       r = Math.round(r / total); g = Math.round(g / total); b = Math.round(b / total);
-      const lin = (c: number) => {
-        const s = c / 255;
-        return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
-      };
-      const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
-      // Pick whichever ink has more contrast (WCAG).
-      const ink = (L + 0.05) / 0.05 > 1.05 / (L + 0.05) ? "#0b0b0c" : "#ffffff";
       const hex = (n: number) => n.toString(16).padStart(2, "0");
-      return { tint: `#${hex(r)}${hex(g)}${hex(b)}`, ink };
+      return { tint: `#${hex(r)}${hex(g)}${hex(b)}`, ink: inkFor(r, g, b) };
     } catch {
       return null;
     }
   };
 
   let shownCover: string | undefined;
-  let color: { tint: string; ink: string } | null = null;
+  let color: Tint | null = null;
+
+  const paint = (c: Tint) => {
+    setTint(c);
+    emit("live-cover:paint", c);
+  };
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   img?.addEventListener("load", () => {
     color = coverColor(img);
     // Already painted with the previous cover? Follow the new one.
-    if (pill?.getAttribute("aria-pressed") === "true" && color) {
-      window.dispatchEvent(new CustomEvent("hero:hold", { detail: color }));
-    }
+    if (pill?.getAttribute("aria-pressed") === "true" && color) paint(color);
   });
 
   img?.addEventListener("error", () => {
@@ -209,11 +208,11 @@
   pill?.addEventListener("click", () => {
     if (!color) return;
     pill.setAttribute("aria-pressed", "true");
-    window.dispatchEvent(new CustomEvent("hero:hold", { detail: color }));
+    paint(color);
   });
 
   // The hero clears "pressed" when someone picks a screen again.
-  window.addEventListener("hero:release", () => pill?.setAttribute("aria-pressed", "false"));
+  window.addEventListener("live-cover:release", () => pill?.setAttribute("aria-pressed", "false"));
 
   const fetchNow = async (): Promise<Entry | null> => {
     const res = await fetch(ENDPOINT, { cache: "no-store" });

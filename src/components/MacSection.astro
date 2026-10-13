@@ -21,18 +21,18 @@ const shots = [
 
 <section id="mac" class="mac" aria-labelledby="mac-title" data-mac>
   <div class="mac-stage" data-mac-stage>
-    <div class="mac-copy">
+    <div class="mac-copy" data-reveal-group data-reveal-start="top 75%">
       <p class="label">Mac</p>
-      <h2 id="mac-title" class="mac-title display">
+      <h2 id="mac-title" class="mac-title display" data-reveal="chars" data-reveal-stagger="0.03">
         <span class="mac-line">Also on</span>
         <span class="mac-line">Mac</span>
       </h2>
-      <p class="mac-body">
+      <p class="mac-body" data-reveal="up" data-reveal-delay="0.2">
         The same Swift codebase as the iPhone app, laid out for a desktop, with a sidebar and the keyboard shortcuts you would expect.
       </p>
     </div>
 
-    <div class="mac-window" data-mac-window>
+    <div class="mac-window" data-mac-window role="region" aria-label="Cassette on Mac, screenshots" tabindex="0">
       <ul class="mac-track" data-mac-track>
         {
           shots.map((s, i) => (
@@ -103,6 +103,41 @@ const shots = [
     display: block;
     width: 100%;
     height: auto;
+  }
+
+  /* Phones and tablets: a swipeable carousel, edge to edge, each screenshot
+     snapping to the centre with the next one peeking in. */
+  @media (max-width: 899px) {
+    .mac-window {
+      margin-inline: -1rem;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: 1rem;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .mac-window::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mac-window:focus-visible {
+      outline-offset: -2px;
+    }
+
+    .mac-track {
+      display: flex;
+      gap: 0.75rem;
+      width: max-content;
+      padding-inline: 1rem;
+    }
+
+    .mac-shot {
+      flex: none;
+      width: min(84vw, 36rem);
+      scroll-snap-align: center;
+    }
   }
 
 

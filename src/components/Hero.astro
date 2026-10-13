@@ -2,10 +2,9 @@
 import { Image } from "astro:assets";
 import { heroScreens } from "../data/screens";
 import NowPlaying from "./NowPlaying.astro";
-import RollLabel from "./RollLabel.astro";
+import Button from "./Button.astro";
 
 const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
-const first = heroScreens[0];
 ---
 
 <section class="hero" data-hero aria-labelledby="hero-title">
@@ -42,27 +41,25 @@ const first = heroScreens[0];
 
     <div class="hero-intro" data-intro>
       <NowPlaying />
-      <p class="hero-lede">
+      <p class="hero-lede" data-hero-lede>
         A native iPhone and Mac app for the music on your own server.
       </p>
-      <p class="hero-sub">
+      <p class="hero-sub" data-hero-step>
         Built for Navidrome, and for anything else that speaks Subsonic. Free and open source.
       </p>
 
       <div class="hero-cta">
-        <a class="btn-solid fx-roll" href={testflightUrl} rel="noopener" target="_blank">
-          <RollLabel text="Join the beta" arrow />
-        </a>
-        <a class="btn-line fx-fill" href="#install">Get it on Mac</a>
+        <Button href={testflightUrl} label="Join the beta" arrow data-hero-step />
+        <Button href="#install" label="Get it on Mac" variant="line" data-hero-step />
       </div>
     </div>
 
     <div class="hero-deck" data-hero-deck data-intro>
-      <p class="deck-label">In the app</p>
+      <p class="deck-label" data-hero-deck-step>In the app</p>
       <ol class="deck-list">
         {
           heroScreens.map((s, i) => (
-            <li>
+            <li data-hero-deck-step>
               <button
                 type="button"
                 class="deck-item"
@@ -222,42 +219,6 @@ const first = heroScreens[0];
     flex-wrap: wrap;
     gap: 0.625rem;
     margin-top: 1.5rem;
-  }
-
-  .btn-solid,
-  .btn-line {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-height: 48px;
-    padding: 0 1.25rem;
-    border-radius: 999px;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    text-decoration: none;
-  }
-
-  .btn-solid {
-    background-color: var(--ink);
-    color: var(--tint);
-  }
-
-  .btn-solid svg {
-    width: 0.875rem;
-    height: 0.875rem;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  .btn-line {
-    box-shadow: inset 0 0 0 1.5px var(--ink);
-    color: var(--ink);
-    --fill: var(--ink);
-    --fill-ink: var(--tint);
   }
 
   /* ── Deck (which screen is showing) ───────────────────── */
@@ -424,117 +385,7 @@ const first = heroScreens[0];
 </style>
 
 <script>
-  const DWELL = 5200;
-
-  const initHero = () => {
-    const hero = document.querySelector<HTMLElement>("[data-hero]");
-    if (!hero || hero.dataset.bound) return;
-    hero.dataset.bound = "true";
-
-    const imgs = [...hero.querySelectorAll<HTMLImageElement>("[data-screen]")];
-    const btns = [...hero.querySelectorAll<HTMLButtonElement>("[data-screen-btn]")];
-    const root = document.documentElement;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let current = 0;
-    let playing = false;
-    let visible = false;
-    // Set while the live cover (NowPlaying) is painting the page.
-    let held = false;
-
-    hero.style.setProperty("--dwell", `${DWELL}ms`);
-
-    const restartBar = () => {
-      hero.removeAttribute("data-playing");
-      void hero.offsetWidth; // reflow so the fill animation restarts
-      if (playing) hero.setAttribute("data-playing", "");
-    };
-
-    const show = (i: number) => {
-      const next = (i + imgs.length) % imgs.length;
-      const prev = current;
-      current = next;
-      imgs.forEach((img, k) => {
-        img.classList.remove("is-leaving", "is-entering");
-        img.classList.toggle("is-active", k === next);
-        if (k === next) img.removeAttribute("aria-hidden");
-        else img.setAttribute("aria-hidden", "true");
-      });
-      // Wipe the new screen in over the old one (skipped on first paint).
-      if (prev !== next) {
-        const incoming = imgs[next];
-        imgs[prev].classList.add("is-leaving");
-        void incoming.offsetWidth; // restart the animation if re-entered quickly
-        incoming.classList.add("is-entering");
-        incoming.addEventListener(
-          "animationend",
-          () => {
-            incoming.classList.remove("is-entering");
-            imgs[prev].classList.remove("is-leaving");
-          },
-          { once: true },
-        );
-      }
-      btns.forEach((b, k) => b.setAttribute("aria-pressed", String(k === current)));
-      const { tint = "#0b0b0c", ink = "#ffffff" } = btns[current].dataset;
-      root.style.setProperty("--tint", tint);
-      root.style.setProperty("--ink", ink);
-      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", tint);
-      // The 3D phone (desktop) follows along with a spin.
-      if (prev !== next) window.dispatchEvent(new CustomEvent("hero:screen", { detail: { index: next } }));
-      restartBar();
-    };
-
-    // The progress bar is the clock: when it finishes filling, advance.
-    hero.addEventListener("animationend", (e) => {
-      if (playing && e.animationName.includes("deck-fill")) show(current + 1);
-    });
-
-    const setPlaying = (on: boolean) => {
-      visible = on;
-      playing = on && !held && !reduceMotion;
-      restartBar();
-    };
-
-    btns.forEach((b, k) =>
-      b.addEventListener("click", () => {
-        if (held) {
-          held = false;
-          window.dispatchEvent(new Event("hero:release"));
-          setPlaying(visible);
-        }
-        show(k);
-      }),
-    );
-
-    // The live cover takes over the color; rotation stops until a screen is picked.
-    window.addEventListener("hero:hold", (e) => {
-      const { tint, ink } = (e as CustomEvent<{ tint: string; ink: string }>).detail;
-      held = true;
-      setPlaying(visible);
-      btns.forEach((b) => b.setAttribute("aria-pressed", "false"));
-      root.style.setProperty("--tint", tint);
-      root.style.setProperty("--ink", ink);
-      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", tint);
-    });
-
-    // Hovering the phone or the list holds the current screen.
-    const holders = [
-      hero.querySelector<HTMLElement>("[data-hero-phone]"),
-      hero.querySelector<HTMLElement>("[data-hero-deck]"),
-    ];
-    holders.forEach((el) => {
-      el?.addEventListener("pointerenter", () => hero.setAttribute("data-paused", ""));
-      el?.addEventListener("pointerleave", () => hero.removeAttribute("data-paused"));
-    });
-
-    // Cycle only while the hero is on screen; the last color stays on the page.
-    new IntersectionObserver(([entry]) => setPlaying(entry.isIntersecting), {
-      threshold: 0.25,
-    }).observe(hero);
-
-    show(0);
-  };
+  import { initHero } from "../scripts/hero";
 
   initHero();
   document.addEventListener("astro:page-load", initHero);

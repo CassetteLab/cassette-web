@@ -1,6 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap';
+import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
 
 import tailwindcss from '@tailwindcss/vite';
 
@@ -9,20 +9,17 @@ const NOW_PLAYING_ORIGIN = process.env.NOW_PLAYING_ORIGIN ?? 'https://mathieu-du
 // https://astro.build/config
 export default defineConfig({
   site: 'https://getcassette.app',
-  base: '',
-  integrations: [
+    integrations: [
     sitemap({
-      // The /survey page is defunct and noindexed — keep it out of the sitemap.
-      filter: (page) => !page.includes('/survey'),
-      changefreq: 'weekly',
+      changefreq: ChangeFreqEnum.WEEKLY,
       lastmod: new Date(),
       serialize(item) {
         if (item.url === 'https://getcassette.app/') {
           item.priority = 1.0;
-          item.changefreq = 'weekly';
+          item.changefreq = ChangeFreqEnum.WEEKLY;
         } else {
           item.priority = 0.6;
-          item.changefreq = 'monthly';
+          item.changefreq = ChangeFreqEnum.MONTHLY;
         }
         return item;
       },

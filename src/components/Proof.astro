@@ -16,31 +16,31 @@ const quotes = [
 
 <section class="proof" aria-labelledby="proof-title">
   <div class="shell">
-    <h2 id="proof-title" class="label reveal">Testers</h2>
+    <h2 id="proof-title" class="label" data-reveal="up">Testers</h2>
 
     <dl class="stats">
       {
         stats.map((s, i) => (
-          <div class="stat" style={`--delay: ${i * 80}ms`}>
+          <div class="stat" data-reveal-group data-reveal="up" data-reveal-delay={i * 0.08}>
             <dt class="stat-caption">{s.caption}</dt>
-            <dd class="stat-value display">{s.value}</dd>
+            <dd class="stat-value display" data-reveal="count" data-reveal-delay={i * 0.08}>{s.value}</dd>
           </div>
         ))
       }
     </dl>
 
-    <p class="proof-note reveal">
+    <p class="proof-note" data-reveal="up">
       An Android port is on the way, written by a contributor. The app is funded by the people who use it, <a href="https://ko-fi.com/mathieudbrt" rel="noopener" target="_blank">on Ko-fi</a>.
     </p>
 
     <ul class="quotes">
       {
-        quotes.map((q, i) => (
-          <li class="quote" style={`--delay: ${i * 90}ms`}>
+        quotes.map((q) => (
+          <li class="quote" data-reveal-group>
             <blockquote>
-              <p>“{q.replace(/^“|”$/g, "")}”</p>
+              <p data-reveal="lines">“{q.replace(/^“|”$/g, "")}”</p>
             </blockquote>
-            <p class="quote-by">TestFlight tester</p>
+            <p class="quote-by" data-reveal="up" data-reveal-delay="0.35">TestFlight tester</p>
           </li>
         ))
       }

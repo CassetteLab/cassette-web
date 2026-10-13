@@ -70,7 +70,6 @@ function heroIntro() {
   const word = $("[data-hero-word]", hero);
   const phone = $("[data-phone-motion]", hero);
   const parallax = $("[data-phone-parallax]", hero);
-  const intro = $(".hero-intro", hero);
   const deck = $("[data-hero-deck]", hero);
 
   // Reveal the containers; their contents are animated from hidden states below.
@@ -87,15 +86,13 @@ function heroIntro() {
     tl.from(phone, { yPercent: 75, scale: 0.94, duration: 1.7, ease: "expo.out" }, 0.15);
   }
 
-  if (intro) {
-    const lede = $(".hero-lede", intro);
-    const rest = $$(".hero-sub, .hero-cta > *, .np:not([hidden])", intro);
-    if (lede) tl.add(riseLines(lede, { stagger: 0.09 }), 0.55);
-    if (rest.length) tl.from(rest, { y: 18, autoAlpha: 0, duration: 0.9, stagger: 0.07 }, 0.8);
-  }
+  const lede = $("[data-hero-lede]", hero);
+  if (lede) tl.add(riseLines(lede, { stagger: 0.09 }), 0.55);
+  const rest = $$("[data-hero-step]", hero).filter((el) => !el.hidden);
+  if (rest.length) tl.from(rest, { y: 18, autoAlpha: 0, duration: 0.9, stagger: 0.07 }, 0.8);
 
   if (deck) {
-    tl.from($$(".deck-label, .deck-list li", deck), { x: 24, autoAlpha: 0, duration: 0.9, stagger: 0.06 }, 0.85);
+    tl.from($$("[data-hero-deck-step]", deck), { x: 24, autoAlpha: 0, duration: 0.9, stagger: 0.06 }, 0.85);
   }
 
   // Scroll: a light parallax, the word drifts down a touch while the phone lifts.
@@ -106,65 +103,75 @@ function heroIntro() {
   if (parallax) gsap.fromTo(parallax, { yPercent: 0 }, { yPercent: -4, ease: "none", immediateRender: false, scrollTrigger: { ...scroll } });
 }
 
-function proof() {
-  // Numbers count up when they come into view ("1,300+" keeps its comma and suffix).
-  $$(".stat").forEach((stat, i) => {
-    const value = $(".stat-value", stat);
-    if (!value) return;
-    const raw = value.textContent ?? "";
-    const target = Number(raw.replace(/[^\d]/g, ""));
-    const suffix = raw.replace(/[\d,.\s]/g, "");
-    const counter = { n: 0 };
-    gsap.from(stat, { y: 40, autoAlpha: 0, duration: 1, ease: EASE, delay: i * 0.08, scrollTrigger: onEnter(stat) });
-    if (!target) return;
-    gsap.to(counter, {
-      n: target,
-      duration: 1.8,
-      ease: "power3.out",
-      delay: i * 0.08,
-      scrollTrigger: onEnter(stat),
-      onUpdate: () => {
-        value.textContent = `${Math.round(counter.n).toLocaleString("en-US")}${suffix}`;
-      },
-    });
-  });
+/*
+ * Scroll reveals, declared in the markup:
+ *
+ *   data-reveal="chars"   letters rise out of their masks (display type)
+ *   data-reveal="lines"   lines rise out of their masks (running text)
+ *   data-reveal="up"      fades up a little
+ *   data-reveal="count"   counts up to the number it shows ("1,300+")
+ *
+ *   data-reveal-group     on a container: its revealed children share one
+ *                         trigger, and "up" children are staggered in order
+ *   data-reveal-start     ScrollTrigger start for that trigger ("top 85%")
+ *   data-reveal-delay     extra delay in seconds
+ *   data-reveal-stagger   per-letter / per-line stagger in seconds
+ *
+ * Renaming a CSS class never breaks an animation this way.
+ */
+function reveals() {
+  const upIndex = new Map<Element, number>();
 
-  $$(".quote").forEach((q) => {
-    const text = $("blockquote p", q);
-    const by = $(".quote-by", q);
-    const st = onEnter(q, "top 85%");
-    if (text) riseLines(text, { scrollTrigger: st });
-    if (by) gsap.from(by, { autoAlpha: 0, y: 10, duration: 0.8, delay: 0.35, ease: EASE, scrollTrigger: st });
+  $$("[data-reveal]").forEach((el) => {
+    const group = el.closest("[data-reveal-group]") ?? el;
+    const start = (group as HTMLElement).dataset.revealStart ?? "top 85%";
+    const st = onEnter(group, start);
+    const delay = Number(el.dataset.revealDelay ?? 0);
+    const stagger = el.dataset.revealStagger ? Number(el.dataset.revealStagger) : undefined;
+
+    switch (el.dataset.reveal) {
+      case "chars":
+        riseChars(el, { delay, scrollTrigger: st, ...(stagger !== undefined && { stagger }) });
+        break;
+      case "lines":
+        riseLines(el, { delay, scrollTrigger: st, ...(stagger !== undefined && { stagger }) });
+        break;
+      case "up": {
+        const i = upIndex.get(group) ?? 0;
+        upIndex.set(group, i + 1);
+        gsap.from(el, { y: 20, autoAlpha: 0, duration: 0.9, ease: EASE, delay: delay + i * 0.07, scrollTrigger: st });
+        break;
+      }
+      case "count": {
+        const raw = el.textContent ?? "";
+        const target = Number(raw.replace(/[^\d]/g, ""));
+        if (!target) break;
+        const suffix = raw.replace(/[\d,.\s]/g, "");
+        const counter = { n: 0 };
+        gsap.to(counter, {
+          n: target,
+          duration: 1.8,
+          ease: "power3.out",
+          delay,
+          scrollTrigger: st,
+          onUpdate: () => {
+            el.textContent = `${Math.round(counter.n).toLocaleString("en-US")}${suffix}`;
+          },
+        });
+        break;
+      }
+    }
   });
 }
 
-function tracklist() {
-  $$(".tl-row").forEach((row) => {
-    const st = onEnter(row, "top 88%");
-    const name = $(".tl-name", row);
-    if (name) riseChars(name, { stagger: 0.025, scrollTrigger: st });
-    const meta = $$(".tl-num, .tl-body", row);
-    if (meta.length) gsap.from(meta, { autoAlpha: 0, y: 16, duration: 0.9, ease: EASE, delay: 0.15, scrollTrigger: st });
-  });
-}
-
-function mac() {
-  const section = $("[data-mac]");
-  if (!section) return;
-  const title = $(".mac-title", section);
-  if (title) riseChars(title, { stagger: 0.03, scrollTrigger: onEnter(title) });
-  const rest = $$(".mac-body", section);
-  if (rest.length) {
-    gsap.from(rest, { y: 18, autoAlpha: 0, duration: 0.9, ease: EASE, stagger: 0.06, delay: 0.2, scrollTrigger: onEnter(section, "top 70%") });
-  }
-
-  const stage = $("[data-mac-stage]", section);
-  const win = $("[data-mac-window]", section);
-  const track = $("[data-mac-track]", section);
+/* Mac section, desktop: pin it and slide the screenshots through the window,
+   one pixel of scroll per pixel of track. */
+function macGallery() {
+  const stage = $("[data-mac-stage]");
+  const win = $("[data-mac-window]");
+  const track = $("[data-mac-track]");
   if (!stage || !win || !track) return;
 
-  // Desktop only: pin the section and slide the screenshots through the
-  // window, one scroll distance per pixel of track.
   gsap.matchMedia().add("(min-width: 900px)", () => {
     const distance = () => Math.max(0, track.scrollWidth - win.clientWidth);
     gsap.to(track, {
@@ -182,24 +189,15 @@ function mac() {
   });
 }
 
-function install() {
-  const section = $("#install");
+/* The install block wipes open from a rounded card to full bleed. */
+function installWipe() {
+  const section = $("[data-install]");
   if (!section) return;
-  // The color block wipes open from a rounded card to full bleed.
   gsap.fromTo(
     section,
     { clipPath: "inset(6% 4% 6% 4% round 28px)" },
     { clipPath: "inset(0% 0% 0% 0% round 0px)", ease: "none", scrollTrigger: { trigger: section, start: "top 95%", end: "top 30%", scrub: true } },
   );
-  $$(".platform", section).forEach((p, i) => {
-    const st = onEnter(p, "top 80%");
-    const name = $(".platform-name", p);
-    if (name) riseChars(name, { delay: i * 0.12, scrollTrigger: st });
-    const parts = $$(".platform-body, .install-btn, .term", p);
-    if (parts.length) gsap.from(parts, {
-      y: 24, autoAlpha: 0, duration: 0.9, ease: EASE, stagger: 0.08, delay: 0.25 + i * 0.12, scrollTrigger: st,
-    });
-  });
 }
 
 /*
@@ -212,7 +210,7 @@ function buttons() {
   $$(".fx-roll, .fx-fill").forEach((btn) => {
     const toX = gsap.quickTo(btn, "x", { duration: 0.5, ease: "power3.out" });
     const toY = gsap.quickTo(btn, "y", { duration: 0.5, ease: "power3.out" });
-    const pull = btn.classList.contains("term-copy") ? 0.15 : 0.22;
+    const pull = Number(btn.dataset.magnet ?? 0.22); // data-magnet tunes the pull
 
     btn.addEventListener("pointermove", (e) => {
       const r = btn.getBoundingClientRect();
@@ -231,28 +229,13 @@ function buttons() {
   });
 }
 
-function footer() {
-  const word = $(".footer-word");
-  if (word) riseChars(word, { duration: 1.3, stagger: 0.05, scrollTrigger: onEnter(word, "top 92%") });
-}
-
-function notFound() {
-  const code = $(".nf-code > span[aria-hidden]");
-  if (!code) return;
-  riseChars(code, { duration: 1.3, stagger: 0.08, delay: 0.1 });
-  gsap.from($$(".nf-copy > *, .nf-label"), { y: 20, autoAlpha: 0, duration: 0.9, ease: EASE, stagger: 0.08, delay: 0.5 });
-}
-
 const start = () => {
   const mm = gsap.matchMedia();
   mm.add("(prefers-reduced-motion: no-preference)", () => {
     heroIntro();
-    proof();
-    tracklist();
-    mac();
-    install();
-    footer();
-    notFound();
+    reveals();
+    macGallery();
+    installWipe();
     buttons();
   });
   // Reduced motion: make sure nothing stays hidden.

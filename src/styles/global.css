@@ -265,22 +265,6 @@ html.js-motion [data-intro] {
   visibility: hidden;
 }
 
-/* ── Scroll reveal ──────────────────────────────────────────── */
-@layer utilities {
-  .reveal {
-    opacity: 0;
-    transform: translateY(28px);
-    transition:
-      opacity 700ms var(--ease-out-expo) var(--delay, 0ms),
-      transform 700ms var(--ease-out-expo) var(--delay, 0ms);
-  }
-
-  .reveal.is-visible {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 /* ── Reduced motion ─────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -296,8 +280,4 @@ html.js-motion [data-intro] {
     transition-duration: 0.01ms !important;
   }
 
-  .reveal {
-    opacity: 1;
-    transform: none;
-  }
 }
