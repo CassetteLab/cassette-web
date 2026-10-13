@@ -9,6 +9,10 @@
  * - Same-page anchor links (#install, /#faq…) glide instead of jumping. Lenis'
  *   own `anchors` option lets the browser's jump happen first and then
  *   fights it, so links are handled here.
+ * - If the machine can't keep up (sustained < ~30 fps while gliding), it
+ *   hands back to native scrolling for the rest of the visit: native scroll
+ *   runs on the compositor and stays smooth even when the page is busy,
+ *   whereas a JS-driven scroll stutters with every slow frame.
  * - Started from motion.ts inside the no-reduced-motion media query, so it is
  *   torn down if the visitor turns reduced motion on.
  */
@@ -27,8 +31,30 @@ export function smoothScroll() {
   });
 
   lenis.on("scroll", ScrollTrigger.update);
-  const tick = (time: number) => lenis.raf(time * 1000);
-  gsap.ticker.add(tick);
+
+  // Watch the frame time while Lenis is the one moving the page.
+  const SLOW_FRAME = 1000 / 30;
+  let frameAvg = 0;
+  let slowFrames = 0;
+  let lastTime = 0;
+  let stopped = false;
+  let gliding = false; // an anchor link is scrolling; never cut it short
+
+  const tick = (time: number) => {
+    const now = time * 1000;
+    const dt = now - lastTime;
+    lastTime = now;
+    lenis.raf(now);
+    if (gliding || lenis.isScrolling !== "smooth" || document.hidden || dt > 1000) return;
+    frameAvg = frameAvg * 0.9 + dt * 0.1;
+    slowFrames = frameAvg > SLOW_FRAME ? slowFrames + 1 : 0;
+    if (slowFrames > 90) stop(); // ~3 s of struggling
+  };
+  // A wheel or key during a glide takes over (Lenis drops the glide).
+  lenis.on("virtual-scroll", () => (gliding = false));
+  // First in the ticker, so ScrollTrigger and the 3D phone read this frame's
+  // scroll position rather than the previous one.
+  gsap.ticker.add(tick, false, true);
   // Lenis computes its own deltas; GSAP's lag smoothing would make it stutter.
   gsap.ticker.lagSmoothing(0);
 
@@ -43,17 +69,26 @@ export function smoothScroll() {
 
     e.preventDefault();
     if (url.hash !== location.hash) history.pushState(null, "", url.hash);
-    lenis.scrollTo(target, { duration: 1.4, easing: easeInOutQuart });
+    gliding = true;
+    lenis.scrollTo(target, {
+      duration: 1.4,
+      easing: easeInOutQuart,
+      onComplete: () => (gliding = false),
+    });
     // Like a native jump: the next Tab starts from the section.
     if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
     target.focus({ preventScroll: true });
   };
   document.addEventListener("click", onClick);
 
-  return () => {
+  function stop() {
+    if (stopped) return;
+    stopped = true;
     document.removeEventListener("click", onClick);
     gsap.ticker.remove(tick);
     gsap.ticker.lagSmoothing(500, 33);
     lenis.destroy();
-  };
+  }
+
+  return stop;
 }
