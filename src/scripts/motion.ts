@@ -83,7 +83,8 @@ function heroIntro() {
   }
 
   if (phone) {
-    tl.from(phone, { yPercent: 38, rotate: 6, autoAlpha: 0, duration: 1.4 }, 0.25);
+    // Rises from below the fold, fully opaque: no fade over the letters.
+    tl.from(phone, { yPercent: 75, scale: 0.94, duration: 1.7, ease: "expo.out" }, 0.15);
   }
 
   if (intro) {
