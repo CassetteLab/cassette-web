@@ -1,4 +1,9 @@
 ---
+/*
+ * Mac section. Desktop: the section pins, the copy stays on the left and the
+ * Mac screenshots travel right-to-left as you scroll (src/scripts/motion.ts).
+ * Phones and reduced motion: the copy, then the screenshots stacked.
+ */
 import { Image } from "astro:assets";
 import library from "../assets/screens/mac-library.png";
 import player from "../assets/screens/mac-player.png";
@@ -6,61 +11,83 @@ import album from "../assets/screens/mac-album.png";
 import wrapped from "../assets/screens/mac-wrapped.png";
 
 const shots = [
-  { img: player, alt: "Cassette's full-screen player on Mac, with synced lyrics next to the cover." },
-  { img: album, alt: "An album page in Cassette on Mac, with the sidebar and the mini player." },
-  { img: wrapped, alt: "Cassette's listening recap on Mac: minutes listened and top artists." },
+  { img: library, caption: "Library", alt: "Cassette's library on Mac: recently added and recently played albums in a grid, sidebar on the left." },
+  { img: player, caption: "Lyrics", alt: "Cassette's full-screen player on Mac, with synced lyrics next to the cover." },
+  { img: album, caption: "Albums", alt: "An album page in Cassette on Mac, with the sidebar and the mini player." },
+  { img: wrapped, caption: "Recap", alt: "Cassette's listening recap on Mac: minutes listened and top artists." },
+];
+
+const facts: [string, string][] = [
+  ["⌘F", "search from anywhere"],
+  ["⌥← ⌥→", "jump back or ahead 10 s"],
+  ["Notarized", "signed by Apple, outside the Mac App Store"],
+  ["Homebrew", "installed and updated as a cask"],
 ];
 ---
 
-<section id="mac" class="mac" aria-labelledby="mac-title">
-  <div class="shell">
-    <div class="mac-head">
-      <p class="label reveal">Mac</p>
+<section id="mac" class="mac" aria-labelledby="mac-title" data-mac>
+  <div class="mac-stage" data-mac-stage>
+    <div class="mac-copy">
+      <p class="label">Mac</p>
       <h2 id="mac-title" class="mac-title display">
         <span class="mac-line">Also on</span>
         <span class="mac-line">Mac</span>
       </h2>
-      <p class="mac-body reveal">
-        The same library on your Mac, with a sidebar and keyboard shortcuts. It installs through Homebrew as a notarized app; there is no Mac App Store version.
+      <p class="mac-body">
+        The same Swift codebase as the iPhone app, laid out for a desktop, with a sidebar and the keyboard shortcuts you would expect.
       </p>
+      <dl class="mac-facts">
+        {
+          facts.map(([k, v]) => (
+            <div>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <a class="mac-install" href="#install">brew install --cask cassette <span aria-hidden="true">↓</span></a>
     </div>
 
-    <figure class="mac-hero">
-      <Image
-        src={library}
-        alt="Cassette's library on Mac: recently added and recently played albums in a grid, sidebar on the left."
-        widths={[640, 960, 1440, 1920]}
-        sizes="(min-width: 1536px) 1456px, calc(100vw - 2rem)"
-        loading="lazy"
-      />
-    </figure>
-
-    <ul class="mac-row">
-      {
-        shots.map((s, i) => (
-          <li>
-            <Image src={s.img} alt={s.alt} widths={[480, 720, 960]} sizes="(min-width: 900px) 31vw, 100vw" loading="lazy" />
-          </li>
-        ))
-      }
-    </ul>
+    <div class="mac-window" data-mac-window>
+      <ul class="mac-track" data-mac-track>
+        {
+          shots.map((s, i) => (
+            <li class="mac-shot">
+              <Image
+                src={s.img}
+                alt={s.alt}
+                widths={[640, 960, 1440]}
+                sizes="(min-width: 900px) 56vw, 100vw"
+                loading={i === 0 ? "eager" : "lazy"}
+              />
+              <p class="mac-caption">
+                <span>{String(i + 1).padStart(2, "0")}</span> {s.caption}
+              </p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </div>
 </section>
 
 <style>
   .mac {
-    padding-block: 3rem 6rem;
-  }
-
-  .mac-head {
-    display: grid;
-    gap: 1rem;
-    padding-top: 1rem;
+    padding-block: 4rem 6rem;
     border-top: 1px solid var(--color-border-subtle);
+    overflow: clip;
   }
 
-  /* Always two lines: left to wrap on its own, the title broke differently
-     while its letters were split for the reveal and after. */
+  .mac-stage {
+    display: grid;
+    gap: 3rem;
+    width: 100%;
+    max-width: 96rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
   .mac-line {
     display: block;
     white-space: nowrap;
@@ -68,64 +95,115 @@ const shots = [
 
   .mac-title {
     margin: 0.5rem 0 0;
-    font-size: clamp(4rem, 17vw, 14rem);
+    font-size: clamp(4rem, 17vw, 9rem);
   }
 
   .mac-body {
-    margin: 0;
-    max-width: 30rem;
+    margin: 1.5rem 0 0;
+    max-width: 28rem;
     font-size: 1.125rem;
     line-height: 1.5;
     color: var(--color-text-secondary);
   }
 
-  .mac-hero {
-    max-width: 76rem;
-    margin: 3rem auto 0;
+  .mac-facts {
+    display: grid;
+    margin: 2rem 0 0;
+    max-width: 28rem;
+    border-top: 1px solid var(--color-border-subtle);
   }
 
-  .mac-hero img,
-  .mac-row img {
+  .mac-facts div {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .mac-facts dt {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: color-mix(in oklab, var(--tint), white 25%);
+  }
+
+  .mac-facts dd {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--color-text-secondary);
+  }
+
+  .mac-install {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    margin-top: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .mac-track {
+    display: grid;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mac-shot img {
     display: block;
     width: 100%;
     height: auto;
   }
 
-  .mac-row {
-    list-style: none;
-    margin: 1.5rem 0 0;
-    padding: 0;
-    display: none;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.5rem;
+  .mac-caption {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-tertiary);
   }
 
+  .mac-caption span {
+    color: var(--color-text-secondary);
+  }
+
+  /* Desktop: copy on the left, a window on the right the track slides through. */
   @media (min-width: 900px) {
     .mac {
-      padding-block: 4rem 9rem;
+      padding-block: 0;
     }
 
-    .mac-head {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
-      align-items: end;
-      column-gap: 2rem;
-    }
-
-    .mac-head .label {
-      grid-column: 1 / -1;
+    .mac-stage {
+      grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+      align-items: center;
+      gap: 4rem;
+      min-height: 100svh;
+      max-width: none;
+      padding-inline: 2.5rem 0;
     }
 
     .mac-title {
-      font-size: min(14vw, 15rem);
+      font-size: min(9vw, 9rem);
     }
 
-    .mac-body {
-      padding-bottom: 1rem;
+    .mac-window {
+      overflow: hidden;
+      padding-block: 2rem;
     }
 
-    .mac-row {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .mac-track {
+      display: flex;
+      gap: 3rem;
+      width: max-content;
+      padding-right: 2.5rem;
+    }
+
+    .mac-shot {
+      flex: none;
+      width: min(56vw, 64rem);
     }
   }
 </style>
