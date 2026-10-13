@@ -3,9 +3,8 @@
  * "In the app": one panel per screen. With the 3D phone (desktop), the phone
  * is pinned in the middle of the viewport and the copy alternates around it;
  * the section takes each screen's color. Without it (phones, reduced motion,
- * no WebGL), each panel simply shows its screenshot next to the copy.
+ * no WebGL) the panels are copy only: the screenshots are already in the hero.
  */
-import { Image } from "astro:assets";
 import { heroScreens } from "../data/screens";
 ---
 
@@ -21,14 +20,11 @@ import { heroScreens } from "../data/screens";
       >
         <div class="sc-copy shell">
           <div class="sc-text">
-            <p class="sc-index">
-              {String(i + 1).padStart(2, "0")} / {String(heroScreens.length).padStart(2, "0")}
-            </p>
             <h3 class="sc-name display">{s.name}</h3>
             <p class="sc-line">{s.line}</p>
-          </div>
-          <div class="sc-fallback">
-            <Image src={s.img} alt={s.alt} widths={[360, 540, 720]} sizes="(min-width: 640px) 40vw, 72vw" loading="lazy" />
+            <ul class="sc-points" aria-label="Details">
+              {s.points.map((pt) => <li>{pt}</li>)}
+            </ul>
           </div>
         </div>
       </article>
@@ -46,8 +42,18 @@ import { heroScreens } from "../data/screens";
   .sc-panel {
     display: flex;
     align-items: center;
+    padding-block: 4rem;
+  }
+
+  .sc-panel + .sc-panel {
+    border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  }
+
+  /* With the 3D phone, every panel is a full screen the phone turns in. */
+  :global(html[data-3d]) .sc-panel {
     min-height: 100svh;
     padding-block: 5rem;
+    border-top: 0;
   }
 
   .sc-copy {
@@ -57,16 +63,10 @@ import { heroScreens } from "../data/screens";
     align-items: center;
   }
 
-  .sc-index {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    opacity: 0.75;
-  }
 
   .sc-name {
-    margin: 0.75rem 0 0;
-    font-size: clamp(4rem, 14vw, 10rem);
+    margin: 0;
+    font-size: clamp(4rem, 15vw, 8.5rem);
   }
 
   .sc-line {
@@ -76,17 +76,24 @@ import { heroScreens } from "../data/screens";
     line-height: 1.45;
   }
 
-  .sc-fallback {
-    justify-self: center;
-    width: min(72vw, 22rem);
-    filter: drop-shadow(0 30px 40px rgb(0 0 0 / 0.3));
+  .sc-points {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
   }
 
-  .sc-fallback img {
-    display: block;
-    width: 100%;
-    height: auto;
+  .sc-points li {
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 40%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
   }
+
+
 
   @media (min-width: 900px) {
     .sc-copy {
@@ -104,16 +111,17 @@ import { heroScreens } from "../data/screens";
    * screen, so each panel keeps its copy on one side and leaves the centre
    * (and the opposite side) clear.
    */
-  :global(html[data-3d]) .sc-fallback {
-    display: none;
-  }
 
   :global(html[data-3d]) .sc-copy {
     grid-template-columns: minmax(0, 1fr);
   }
 
   :global(html[data-3d]) .sc-text {
-    max-width: calc(50% - 13rem);
+    max-width: calc(50% - 12rem);
+  }
+
+  :global(html[data-3d]) .sc-name {
+    font-size: min(7.4vw, 8.5rem);
   }
 
   :global(html[data-3d]) .is-right .sc-text {

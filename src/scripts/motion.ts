@@ -149,19 +149,37 @@ function tracklist() {
 }
 
 function mac() {
-  const title = $(".mac-title");
+  const section = $("[data-mac]");
+  if (!section) return;
+  const title = $(".mac-title", section);
   if (title) riseChars(title, { stagger: 0.03, scrollTrigger: onEnter(title) });
-  const shot = $(".mac-hero");
-  if (shot) {
-    // The Mac grows into place as you scroll toward it.
-    gsap.fromTo(
-      shot,
-      { scale: 0.86, yPercent: 6, autoAlpha: 0.4 },
-      { scale: 1, yPercent: 0, autoAlpha: 1, ease: "none", scrollTrigger: { trigger: shot, start: "top 95%", end: "top 35%", scrub: true } },
-    );
+  const rest = $$(".mac-body", section);
+  if (rest.length) {
+    gsap.from(rest, { y: 18, autoAlpha: 0, duration: 0.9, ease: EASE, stagger: 0.06, delay: 0.2, scrollTrigger: onEnter(section, "top 70%") });
   }
-  const row = $(".mac-row");
-  if (row) gsap.from($$("li", row), { y: 60, autoAlpha: 0, duration: 1, ease: EASE, stagger: 0.1, scrollTrigger: onEnter(row, "top 90%") });
+
+  const stage = $("[data-mac-stage]", section);
+  const win = $("[data-mac-window]", section);
+  const track = $("[data-mac-track]", section);
+  if (!stage || !win || !track) return;
+
+  // Desktop only: pin the section and slide the screenshots through the
+  // window, one scroll distance per pixel of track.
+  gsap.matchMedia().add("(min-width: 900px)", () => {
+    const distance = () => Math.max(0, track.scrollWidth - win.clientWidth);
+    gsap.to(track, {
+      x: () => -distance(),
+      ease: "none",
+      scrollTrigger: {
+        trigger: stage,
+        start: "top top",
+        end: () => `+=${distance()}`,
+        pin: true,
+        scrub: 0.6,
+        invalidateOnRefresh: true,
+      },
+    });
+  });
 }
 
 function install() {
