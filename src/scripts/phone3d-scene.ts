@@ -93,7 +93,12 @@ export async function start() {
   const loadTex = async (url: string) => {
     const t = await texLoader.loadAsync(url);
     t.colorSpace = THREE.SRGBColorSpace;
-    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    // The phone is drawn at roughly the texture's own size, so mipmaps would
+    // only blend in the half-size level and soften the text. Plain linear
+    // filtering keeps it crisp; the brief edge-on moments of the spin are
+    // too fast to shimmer.
+    t.generateMipmaps = false;
+    t.minFilter = THREE.LinearFilter;
     return t;
   };
   const [gltf, ...textures] = await Promise.all([
@@ -182,10 +187,11 @@ export async function start() {
   // The canvas covers the whole viewport, so on a modest GPU (or a big
   // screen) drawing it is what makes scrolling stutter. While the phone is
   // moving, track the frame time; if it stays above ~45 fps worth, drop the
-  // resolution a notch (never below 0.75). It never steps back up, so it
-  // can't oscillate. Fast machines never trigger it.
+  // resolution a notch. Never below 1 CSS px per pixel: under that the
+  // screenshots on the phone go soft. It never steps back up, so it can't
+  // oscillate. Fast machines never trigger it.
   const SLOW_FRAME = 1000 / 45;
-  const MIN_RATIO = 0.75;
+  const MIN_RATIO = Math.min(1, pixelRatio);
   let frameAvg = 0;
   let movingFrames = 0;
   let lastTime = 0;
