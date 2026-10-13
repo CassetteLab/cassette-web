@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Footer from "../components/Footer.astro";
-import RollLabel from "../components/RollLabel.astro";
+import Button from "../components/Button.astro";
 import { heroScreens } from "../data/screens";
 
 // Each visit to a dead link lands on a different color from the hero rotation.
@@ -11,16 +11,16 @@ const palette = heroScreens.map(({ tint, ink }) => ({ tint, ink }));
 <Layout title="Not found · Cassette" description="This page doesn't exist." noindex={true}>
   <main class="nf" data-nf data-palette={JSON.stringify(palette)}>
     <div class="nf-stage shell">
-      <p class="nf-label">Error 404</p>
+      <p class="nf-label" data-reveal="up" data-reveal-delay="0.45">Error 404</p>
       <h1 class="nf-code display">
-        <span aria-hidden="true">404</span>
+        <span aria-hidden="true" data-reveal="chars" data-reveal-delay="0.1" data-reveal-stagger="0.08">404</span>
         <span class="sr-only">Page not found</span>
       </h1>
-      <div class="nf-copy">
-        <p class="nf-lede">This track isn’t on the tape.</p>
-        <p class="nf-sub">The page you’re looking for doesn’t exist, or it moved.</p>
-        <div class="nf-cta">
-          <a class="nf-btn fx-roll" href="/"><RollLabel text="Back to the home page" /></a>
+      <div class="nf-copy" data-reveal-group data-reveal-start="top bottom">
+        <p class="nf-lede" data-reveal="up" data-reveal-delay="0.5">This track isn’t on the tape.</p>
+        <p class="nf-sub" data-reveal="up" data-reveal-delay="0.5">The page you’re looking for doesn’t exist, or it moved.</p>
+        <div class="nf-cta" data-reveal="up" data-reveal-delay="0.5">
+          <Button href="/" label="Back to the home page" />
           <a class="nf-link" href="/#install">Get Cassette</a>
         </div>
       </div>
@@ -105,17 +105,6 @@ const palette = heroScreens.map(({ tint, ink }) => ({ tint, ink }));
     margin-top: 1rem;
   }
 
-  .nf-btn {
-    display: inline-flex;
-    align-items: center;
-    min-height: 48px;
-    padding: 0 1.375rem;
-    border-radius: 999px;
-    background-color: var(--ink);
-    color: var(--tint);
-    font-weight: 600;
-    text-decoration: none;
-  }
 
   .nf-link {
     display: inline-flex;

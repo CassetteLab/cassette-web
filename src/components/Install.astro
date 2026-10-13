@@ -1,5 +1,5 @@
 ---
-import RollLabel from "./RollLabel.astro";
+import Button from "./Button.astro";
 
 const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
 
@@ -12,26 +12,24 @@ const installCommands = [
 const copyText = installCommands.join("\n");
 ---
 
-<section id="install" class="install" aria-labelledby="install-title">
+<section id="install" class="install" aria-labelledby="install-title" data-install>
   <div class="shell">
     <h2 id="install-title" class="label install-label">Install</h2>
 
     <div class="install-grid">
-      <div class="platform">
-        <h3 class="platform-name display">iPhone</h3>
-        <p class="platform-body">The beta is public on TestFlight. Open the link on your iPhone to join it.</p>
-        <a class="install-btn fx-roll" href={testflightUrl} rel="noopener" target="_blank">
-          <RollLabel text="Join the TestFlight beta" arrow />
-        </a>
+      <div class="platform" data-reveal-group data-reveal-start="top 80%">
+        <h3 class="platform-name display" data-reveal="chars">iPhone</h3>
+        <p class="platform-body" data-reveal="up" data-reveal-delay="0.25">The beta is public on TestFlight. Open the link on your iPhone to join it.</p>
+        <Button href={testflightUrl} label="Join the TestFlight beta" arrow size="lg" data-reveal="up" data-reveal-delay="0.25" />
       </div>
 
-      <div class="platform">
-        <h3 class="platform-name display">Mac</h3>
-        <p class="platform-body">Install it with Homebrew. Updates come through Homebrew as well.</p>
+      <div class="platform" data-reveal-group data-reveal-start="top 80%">
+        <h3 class="platform-name display" data-reveal="chars" data-reveal-delay="0.12">Mac</h3>
+        <p class="platform-body" data-reveal="up" data-reveal-delay="0.37">Install it with Homebrew. Updates come through Homebrew as well.</p>
 
-        <div class="term" data-mac-install>
+        <div class="term" data-mac-install data-reveal="up" data-reveal-delay="0.37">
           <pre class="term-code"><code>{copyText}</code></pre>
-          <button type="button" class="term-copy fx-fill" aria-label="Copy install commands">
+          <button type="button" class="term-copy fx-fill" aria-label="Copy install commands" data-magnet="0.15">
             <span class="copy-label" aria-live="polite">Copy</span>
           </button>
         </div>
@@ -77,29 +75,6 @@ const copyText = installCommands.join("\n");
     max-width: 26rem;
     font-size: 1.125rem;
     line-height: 1.5;
-  }
-
-  .install-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-height: 52px;
-    padding: 0 1.5rem;
-    border-radius: 999px;
-    background-color: var(--ink);
-    color: var(--tint);
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  .install-btn svg {
-    width: 0.875rem;
-    height: 0.875rem;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
   }
 
   /* Terminal: always dark, whatever the tint. */

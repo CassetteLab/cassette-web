@@ -2,7 +2,7 @@
 import { Image } from "astro:assets";
 import { heroScreens } from "../data/screens";
 import NowPlaying from "./NowPlaying.astro";
-import RollLabel from "./RollLabel.astro";
+import Button from "./Button.astro";
 
 const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
 ---
@@ -41,27 +41,25 @@ const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
 
     <div class="hero-intro" data-intro>
       <NowPlaying />
-      <p class="hero-lede">
+      <p class="hero-lede" data-hero-lede>
         A native iPhone and Mac app for the music on your own server.
       </p>
-      <p class="hero-sub">
+      <p class="hero-sub" data-hero-step>
         Built for Navidrome, and for anything else that speaks Subsonic. Free and open source.
       </p>
 
       <div class="hero-cta">
-        <a class="btn-solid fx-roll" href={testflightUrl} rel="noopener" target="_blank">
-          <RollLabel text="Join the beta" arrow />
-        </a>
-        <a class="btn-line fx-fill" href="#install">Get it on Mac</a>
+        <Button href={testflightUrl} label="Join the beta" arrow data-hero-step />
+        <Button href="#install" label="Get it on Mac" variant="line" data-hero-step />
       </div>
     </div>
 
     <div class="hero-deck" data-hero-deck data-intro>
-      <p class="deck-label">In the app</p>
+      <p class="deck-label" data-hero-deck-step>In the app</p>
       <ol class="deck-list">
         {
           heroScreens.map((s, i) => (
-            <li>
+            <li data-hero-deck-step>
               <button
                 type="button"
                 class="deck-item"
@@ -221,42 +219,6 @@ const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
     flex-wrap: wrap;
     gap: 0.625rem;
     margin-top: 1.5rem;
-  }
-
-  .btn-solid,
-  .btn-line {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-height: 48px;
-    padding: 0 1.25rem;
-    border-radius: 999px;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    text-decoration: none;
-  }
-
-  .btn-solid {
-    background-color: var(--ink);
-    color: var(--tint);
-  }
-
-  .btn-solid svg {
-    width: 0.875rem;
-    height: 0.875rem;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  .btn-line {
-    box-shadow: inset 0 0 0 1.5px var(--ink);
-    color: var(--ink);
-    --fill: var(--ink);
-    --fill-ink: var(--tint);
   }
 
   /* ── Deck (which screen is showing) ───────────────────── */
