@@ -16,13 +16,13 @@ const shots = [
   <div class="shell">
     <div class="mac-head">
       <p class="label reveal">side b</p>
-      <h2 id="mac-title" class="mac-title display reveal">Also on Mac</h2>
+      <h2 id="mac-title" class="mac-title display">Also on Mac</h2>
       <p class="mac-body reveal">
         Same app, built for the desktop: a sidebar, keyboard shortcuts, a mini player that stays put. It ships as a notarized download through Homebrew, outside the Mac App Store.
       </p>
     </div>
 
-    <figure class="mac-hero reveal">
+    <figure class="mac-hero">
       <Image
         src={library}
         alt="Cassette's library on Mac: recently added and recently played albums in a grid, sidebar on the left."
@@ -35,7 +35,7 @@ const shots = [
     <ul class="mac-row">
       {
         shots.map((s, i) => (
-          <li class="reveal" style={`--delay: ${i * 80}ms`}>
+          <li>
             <Image src={s.img} alt={s.alt} widths={[480, 720, 960]} sizes="(min-width: 900px) 31vw, 100vw" loading="lazy" />
           </li>
         ))

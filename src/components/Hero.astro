@@ -10,13 +10,14 @@ const first = heroScreens[0];
 <section class="hero" data-hero aria-labelledby="hero-title">
   <div class="hero-stage shell">
     <h1 id="hero-title" class="hero-word display">
-      <span aria-hidden="true">Cassette</span>
+      <span aria-hidden="true" data-hero-word data-intro>Cassette</span>
       <span class="sr-only">
         Cassette, a native iOS and macOS music player for Navidrome, Subsonic and OpenSubsonic servers
       </span>
     </h1>
 
     <div class="hero-phone" data-hero-phone>
+      <div class="phone-motion" data-phone-motion data-intro>
       {
         heroScreens.map((s, i) => (
           <Image
@@ -33,9 +34,10 @@ const first = heroScreens[0];
           />
         ))
       }
+      </div>
     </div>
 
-    <div class="hero-intro">
+    <div class="hero-intro" data-intro>
       <NowPlaying />
       <p class="hero-lede">
         A native iPhone and Mac app for the music on your own server.
@@ -53,7 +55,7 @@ const first = heroScreens[0];
       </div>
     </div>
 
-    <div class="hero-deck" data-hero-deck>
+    <div class="hero-deck" data-hero-deck data-intro>
       <p class="deck-label">on screen</p>
       <ol class="deck-list">
         {
@@ -126,6 +128,14 @@ const first = heroScreens[0];
     margin-top: -16vw;
     aspect-ratio: 1510 / 3040;
     filter: drop-shadow(0 40px 50px rgb(0 0 0 / 0.32));
+  }
+
+  /* GSAP moves this wrapper, so the positioning transform on .hero-phone
+     (desktop centering) is never touched. */
+  .phone-motion {
+    display: grid;
+    width: 100%;
+    height: 100%;
   }
 
   .phone-img {

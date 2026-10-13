@@ -21,7 +21,7 @@ const quotes = [
     <dl class="stats">
       {
         stats.map((s, i) => (
-          <div class="stat reveal" style={`--delay: ${i * 80}ms`}>
+          <div class="stat" style={`--delay: ${i * 80}ms`}>
             <dt class="stat-caption">{s.caption}</dt>
             <dd class="stat-value display">{s.value}</dd>
           </div>
@@ -36,7 +36,7 @@ const quotes = [
     <ul class="quotes">
       {
         quotes.map((q, i) => (
-          <li class="quote reveal" style={`--delay: ${i * 90}ms`}>
+          <li class="quote" style={`--delay: ${i * 90}ms`}>
             <blockquote>
               <p>“{q.replace(/^“|”$/g, "")}”</p>
             </blockquote>

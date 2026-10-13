@@ -195,6 +195,11 @@
   color: var(--fill-ink, inherit);
 }
 
+/* Hero pieces GSAP reveals on load (see src/scripts/motion.ts). */
+html.js-motion [data-intro] {
+  visibility: hidden;
+}
+
 /* ── Scroll reveal ──────────────────────────────────────────── */
 @layer utilities {
   .reveal {
