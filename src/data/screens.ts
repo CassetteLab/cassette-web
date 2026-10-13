@@ -19,6 +19,11 @@ export interface HeroScreen {
   by: string;
   tint: string;
   ink: string;
+  /** Screen texture for the 3D phone (public/models/screens). */
+  texture: string;
+  /** Showcase section: what this screen is, and one line about it. */
+  name: string;
+  line: string;
 }
 
 export const heroScreens: HeroScreen[] = [
@@ -29,6 +34,9 @@ export const heroScreens: HeroScreen[] = [
     by: "Jardin Public",
     tint: "#b8111e",
     ink: "#ffffff",
+    texture: "/models/screens/player.webp",
+    name: "Now playing",
+    line: "The cover sets the color of the whole screen. Lyrics and the queue open without leaving the player.",
   },
   {
     img: album,
@@ -37,6 +45,9 @@ export const heroScreens: HeroScreen[] = [
     by: "Daft Punk",
     tint: "#8a91a8",
     ink: "#0b0b0c",
+    texture: "/models/screens/album.webp",
+    name: "Albums",
+    line: "Tracks, year and file format at a glance. Play it, shuffle it or download it from the top of the page.",
   },
   {
     img: playlist,
@@ -45,6 +56,9 @@ export const heroScreens: HeroScreen[] = [
     by: "Playlist",
     tint: "#b71b48",
     ink: "#ffffff",
+    texture: "/models/screens/playlist.webp",
+    name: "Playlists",
+    line: "Edit them in place, add music from anywhere in your library, or let smart shuffle pick.",
   },
   {
     img: artist,
@@ -53,5 +67,8 @@ export const heroScreens: HeroScreen[] = [
     by: "Artist page",
     tint: "#d6d3dc",
     ink: "#0b0b0c",
+    texture: "/models/screens/artist.webp",
+    name: "Artists",
+    line: "Latest release, top tracks and similar artists, on one page.",
   },
 ];

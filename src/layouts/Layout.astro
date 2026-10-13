@@ -141,6 +141,21 @@ const jsonLd = {
     <!-- Motion: hide the hero pieces GSAP is about to reveal, before first
          paint. Skipped for reduced motion; the timeout un-hides everything
          if the script never runs. -->
+    <!-- 3D phone: decided before first paint so the 2D phone never flashes.
+         Home page only, wide screens, motion allowed, WebGL2 available. -->
+    <script is:inline>
+      (function () {
+        try {
+          var home = location.pathname === "/" || location.pathname === "";
+          var wide = matchMedia("(min-width: 900px)").matches;
+          var calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+          if (home && wide && !calm && document.createElement("canvas").getContext("webgl2")) {
+            document.documentElement.setAttribute("data-3d", "");
+          }
+        } catch (e) {}
+      })();
+    </script>
+
     <script is:inline>
       if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
         document.documentElement.classList.add("js-motion");
@@ -156,6 +171,7 @@ const jsonLd = {
 
     <script>
       import "../scripts/motion.ts";
+      import "../scripts/phone3d.ts";
     </script>
 
     <script>

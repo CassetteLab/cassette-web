@@ -41,6 +41,11 @@ const links = [
     <div class="footer-bottom">
       <p>© {currentYear} · Open source under MPL-2.0</p>
       <p>This site sets no cookies.</p>
+      <p class="footer-credit">
+        3D iPhone: <a href="https://sketchfab.com/3d-models/iphone-17-pro-max-87fc1df741384124a8ce0226d2b2058d" rel="noopener" target="_blank">“iPhone 17 Pro Max”</a>
+        by <a href="https://sketchfab.com/MG990" rel="noopener" target="_blank">MajdyModels</a>,
+        <a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener" target="_blank">CC BY 4.0</a>, modified.
+      </p>
     </div>
   </div>
 </footer>
@@ -122,6 +127,15 @@ const links = [
 
   .footer-bottom p {
     margin: 0;
+  }
+
+  .footer-credit {
+    flex-basis: 100%;
+  }
+
+  .footer-credit a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   @media (min-width: 768px) {

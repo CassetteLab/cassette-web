@@ -25,3 +25,7 @@ pnpm-debug.log*
 
 # local Claude Code permissions
 .claude/settings.local.json
+
+# Raw model downloads (source files, not served; the site uses public/models/iphone.glb)
+public/models/*_1k.glb
+public/models/*_4k.glb

@@ -1,0 +1,140 @@
+---
+/*
+ * "In the app": one panel per screen. With the 3D phone (desktop), the phone
+ * is pinned in the middle of the viewport and the copy alternates around it;
+ * the section takes each screen's color. Without it (phones, reduced motion,
+ * no WebGL), each panel simply shows its screenshot next to the copy.
+ */
+import { Image } from "astro:assets";
+import { heroScreens } from "../data/screens";
+---
+
+<section id="showcase" class="showcase" data-showcase aria-labelledby="showcase-title">
+  <h2 id="showcase-title" class="sr-only">In the app</h2>
+  {
+    heroScreens.map((s, i) => (
+      <article
+        class:list={["sc-panel", i % 2 ? "is-right" : "is-left"]}
+        data-sc-panel={i}
+        data-tint={s.tint}
+        data-ink={s.ink}
+      >
+        <div class="sc-copy shell">
+          <div class="sc-text">
+            <p class="sc-index">
+              {String(i + 1).padStart(2, "0")} / {String(heroScreens.length).padStart(2, "0")}
+            </p>
+            <h3 class="sc-name display">{s.name}</h3>
+            <p class="sc-line">{s.line}</p>
+          </div>
+          <div class="sc-fallback">
+            <Image src={s.img} alt={s.alt} widths={[360, 540, 720]} sizes="(min-width: 640px) 40vw, 72vw" loading="lazy" />
+          </div>
+        </div>
+      </article>
+    ))
+  }
+</section>
+
+<style>
+  .showcase {
+    position: relative;
+    background-color: var(--tint);
+    color: var(--ink);
+  }
+
+  .sc-panel {
+    display: flex;
+    align-items: center;
+    min-height: 100svh;
+    padding-block: 5rem;
+  }
+
+  .sc-copy {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .sc-index {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    opacity: 0.75;
+  }
+
+  .sc-name {
+    margin: 0.75rem 0 0;
+    font-size: clamp(4rem, 14vw, 10rem);
+  }
+
+  .sc-line {
+    margin: 1.25rem 0 0;
+    max-width: 26rem;
+    font-size: 1.25rem;
+    line-height: 1.45;
+  }
+
+  .sc-fallback {
+    justify-self: center;
+    width: min(72vw, 22rem);
+    filter: drop-shadow(0 30px 40px rgb(0 0 0 / 0.3));
+  }
+
+  .sc-fallback img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (min-width: 900px) {
+    .sc-copy {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4rem;
+    }
+
+    .is-right .sc-text {
+      order: 2;
+    }
+  }
+
+  /*
+   * 3D mode: the phone is drawn by a fixed canvas in the middle of the
+   * screen, so each panel keeps its copy on one side and leaves the centre
+   * (and the opposite side) clear.
+   */
+  :global(html[data-3d]) .sc-fallback {
+    display: none;
+  }
+
+  :global(html[data-3d]) .sc-copy {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :global(html[data-3d]) .sc-text {
+    max-width: calc(50% - 13rem);
+  }
+
+  :global(html[data-3d]) .is-right .sc-text {
+    justify-self: end;
+  }
+</style>
+
+<script>
+  // The section takes the color of the screen whose panel is in view.
+  const panels = document.querySelectorAll<HTMLElement>("[data-sc-panel]");
+  const root = document.documentElement;
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        const { tint, ink } = (e.target as HTMLElement).dataset;
+        if (tint) root.style.setProperty("--tint", tint);
+        if (ink) root.style.setProperty("--ink", ink);
+      }
+    },
+    { rootMargin: "-45% 0px -45% 0px" },
+  );
+  panels.forEach((p) => io.observe(p));
+</script>
