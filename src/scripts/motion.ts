@@ -69,6 +69,7 @@ function heroIntro() {
   if (!hero) return;
   const word = $("[data-hero-word]", hero);
   const phone = $("[data-phone-motion]", hero);
+  const parallax = $("[data-phone-parallax]", hero);
   const intro = $(".hero-intro", hero);
   const deck = $("[data-hero-deck]", hero);
 
@@ -98,8 +99,10 @@ function heroIntro() {
 
   // Scroll: a light parallax, the word drifts down a touch while the phone lifts.
   const scroll = { trigger: hero, start: "top top", end: "bottom top", scrub: true };
-  if (word) gsap.to(word, { yPercent: 8, ease: "none", scrollTrigger: scroll });
-  if (phone) gsap.to(phone, { yPercent: -4, ease: "none", scrollTrigger: { ...scroll } });
+  if (word) gsap.fromTo(word, { yPercent: 0 }, { yPercent: 8, ease: "none", immediateRender: false, scrollTrigger: scroll });
+  // On its own wrapper, not the one the intro moves: otherwise this tween
+  // records the intro's start offset and snaps the phone down on first scroll.
+  if (parallax) gsap.fromTo(parallax, { yPercent: 0 }, { yPercent: -4, ease: "none", immediateRender: false, scrollTrigger: { ...scroll } });
 }
 
 function proof() {
@@ -180,6 +183,35 @@ function install() {
   });
 }
 
+/*
+ * Juice for buttons: they lean toward the pointer (magnetic), spring back
+ * with a little overshoot, and give under a press. Fine pointers only, so
+ * touch screens never get a button stuck mid-lean.
+ */
+function buttons() {
+  if (!matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  $$(".fx-roll, .fx-fill").forEach((btn) => {
+    const toX = gsap.quickTo(btn, "x", { duration: 0.5, ease: "power3.out" });
+    const toY = gsap.quickTo(btn, "y", { duration: 0.5, ease: "power3.out" });
+    const pull = btn.classList.contains("term-copy") ? 0.15 : 0.22;
+
+    btn.addEventListener("pointermove", (e) => {
+      const r = btn.getBoundingClientRect();
+      toX((e.clientX - (r.left + r.width / 2)) * pull);
+      toY((e.clientY - (r.top + r.height / 2)) * pull * 1.2);
+    });
+    btn.addEventListener("pointerleave", () => {
+      gsap.to(btn, { x: 0, y: 0, scale: 1, duration: 0.9, ease: "elastic.out(1, 0.35)", overwrite: "auto" });
+    });
+    btn.addEventListener("pointerdown", () => {
+      gsap.to(btn, { scale: 0.94, duration: 0.15, ease: "power2.out" });
+    });
+    btn.addEventListener("pointerup", () => {
+      gsap.to(btn, { scale: 1, duration: 0.6, ease: "elastic.out(1.1, 0.4)" });
+    });
+  });
+}
+
 function footer() {
   const word = $(".footer-word");
   if (word) riseChars(word, { duration: 1.3, stagger: 0.05, scrollTrigger: onEnter(word, "top 92%") });
@@ -202,6 +234,7 @@ const start = () => {
     install();
     footer();
     notFound();
+    buttons();
   });
   // Reduced motion: make sure nothing stays hidden.
   mm.add("(prefers-reduced-motion: reduce)", () => {

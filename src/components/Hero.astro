@@ -18,6 +18,7 @@ const first = heroScreens[0];
     </h1>
 
     <div class="hero-phone" data-hero-phone>
+      <div class="phone-parallax" data-phone-parallax>
       <div class="phone-motion" data-phone-motion data-intro>
       {
         heroScreens.map((s, i) => (
@@ -35,6 +36,7 @@ const first = heroScreens[0];
           />
         ))
       }
+      </div>
       </div>
     </div>
 
@@ -56,7 +58,7 @@ const first = heroScreens[0];
     </div>
 
     <div class="hero-deck" data-hero-deck data-intro>
-      <p class="deck-label">on screen</p>
+      <p class="deck-label">In the app</p>
       <ol class="deck-list">
         {
           heroScreens.map((s, i) => (
@@ -119,6 +121,11 @@ const first = heroScreens[0];
     pointer-events: none;
   }
 
+  /* Inline-block so GSAP's scroll parallax can transform it. */
+  [data-hero-word] {
+    display: inline-block;
+  }
+
   /* ── The phone ────────────────────────────────────────── */
   .hero-phone {
     position: relative;
@@ -130,8 +137,10 @@ const first = heroScreens[0];
     filter: drop-shadow(0 40px 50px rgb(0 0 0 / 0.32));
   }
 
-  /* GSAP moves this wrapper, so the positioning transform on .hero-phone
-     (desktop centering) is never touched. */
+  /* Two wrappers so GSAP never touches the positioning transform on
+     .hero-phone (desktop centering), and so the scroll parallax and the
+     intro never animate the same element. */
+  .phone-parallax,
   .phone-motion {
     display: grid;
     width: 100%;
