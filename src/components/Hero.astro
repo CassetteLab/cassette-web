@@ -121,6 +121,12 @@ const first = heroScreens[0];
     pointer-events: none;
   }
 
+  /* With the 3D phone (desktop), the 2D one is out (it's absolutely
+     positioned there, so nothing reflows). */
+  :global(html[data-3d]) .hero-phone {
+    display: none;
+  }
+
   /* Inline-block so GSAP's scroll parallax can transform it. */
   [data-hero-word] {
     display: inline-block;
@@ -474,6 +480,8 @@ const first = heroScreens[0];
       root.style.setProperty("--tint", tint);
       root.style.setProperty("--ink", ink);
       document.querySelector('meta[name="theme-color"]')?.setAttribute("content", tint);
+      // The 3D phone (desktop) follows along with a spin.
+      if (prev !== next) window.dispatchEvent(new CustomEvent("hero:screen", { detail: { index: next } }));
       restartBar();
     };
 

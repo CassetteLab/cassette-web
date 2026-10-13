@@ -249,6 +249,17 @@
   color: var(--fill-ink, inherit);
 }
 
+/* The 3D phone's canvas (src/scripts/phone3d-scene.ts): over the page, never
+   in the way of a click. */
+.phone3d {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 40;
+  pointer-events: none;
+}
+
 /* Hero pieces GSAP reveals on load (see src/scripts/motion.ts). */
 html.js-motion [data-intro] {
   visibility: hidden;
