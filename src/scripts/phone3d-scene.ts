@@ -68,7 +68,10 @@ export async function start() {
   document.body.appendChild(canvas);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // Resolution starts at the screen's (capped at 2) and steps down if frames
+  // run long, see "Adaptive resolution" below.
+  let pixelRatio = Math.min(window.devicePixelRatio, 2);
+  renderer.setPixelRatio(pixelRatio);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.8;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -175,15 +178,54 @@ export async function start() {
     dirty = true;
   };
 
+  // ── Adaptive resolution ─────────────────────────────────────
+  // The canvas covers the whole viewport, so on a modest GPU (or a big
+  // screen) drawing it is what makes scrolling stutter. While the phone is
+  // moving, track the frame time; if it stays above ~45 fps worth, drop the
+  // resolution a notch (never below 0.75). It never steps back up, so it
+  // can't oscillate. Fast machines never trigger it.
+  const SLOW_FRAME = 1000 / 45;
+  const MIN_RATIO = 0.75;
+  let frameAvg = 0;
+  let movingFrames = 0;
+  let lastTime = 0;
+  let renderedLast = false;
+  // Page load (fonts, text splitting, the intro) is noisy: wait it out.
+  const adaptFrom = performance.now() + 3000;
+  const trackFrame = (rendered: boolean) => {
+    const now = performance.now();
+    const dt = now - lastTime;
+    lastTime = now;
+    // Only consecutive rendered frames count (and not after a hidden tab).
+    const continuous = rendered && renderedLast && !document.hidden && dt < 1000 && now > adaptFrom;
+    renderedLast = rendered;
+    if (!continuous) {
+      movingFrames = 0;
+      return;
+    }
+    frameAvg = movingFrames === 0 ? dt : frameAvg * 0.9 + dt * 0.1;
+    movingFrames++;
+    if (movingFrames > 30 && frameAvg > SLOW_FRAME && pixelRatio > MIN_RATIO) {
+      pixelRatio = Math.max(MIN_RATIO, pixelRatio - 0.25);
+      renderer.setPixelRatio(pixelRatio);
+      renderer.setSize(vw, vh, false);
+      movingFrames = 0;
+      dirty = true;
+    }
+  };
+
   // ── Render (only when something moved) ──────────────────────
   let dirty = true;
   let last = "";
   const render = () => {
+    trackFrame(draw());
+  };
+  const draw = () => {
     const y = pose.y + extra.y;
     const ry = pose.ry + extra.ry;
     const glint = Math.max(pose.glint, extra.glint);
     const sig = `${pose.x}|${y}|${pose.h}|${ry}|${pose.rx}|${pose.rz}|${pose.screen}|${glint}|${heroIndex}`;
-    if (!dirty && sig === last) return;
+    if (!dirty && sig === last) return false;
     last = sig;
     dirty = false;
 
@@ -197,6 +239,7 @@ export async function start() {
     setScreen(pose.screen < -0.5 ? heroIndex : Math.min(textures.length - 1, Math.max(0, Math.round(pose.screen))));
     screenMat.uniforms.glint.value = glint;
     renderer.render(scene, camera);
+    return true;
   };
 
   resize();
