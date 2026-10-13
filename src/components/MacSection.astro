@@ -40,7 +40,8 @@ const shots = [
               <Image
                 src={s.img}
                 alt={s.alt}
-                widths={[640, 960, 1440]}
+                widths={[960, 1440, 1920, 2560, 3200]}
+                quality={88}
                 sizes="(min-width: 900px) 56vw, 100vw"
                 loading={i === 0 ? "eager" : "lazy"}
               />

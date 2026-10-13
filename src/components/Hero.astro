@@ -24,7 +24,8 @@ const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
           <Image
             src={s.img}
             alt={s.alt}
-            widths={[320, 480, 720, 960]}
+            widths={[480, 720, 960, 1280, 1510]}
+            quality={90}
             sizes="(min-width: 768px) 44vh, 64vw"
             class:list={["phone-img", { "is-active": i === 0 }]}
             loading="eager"
