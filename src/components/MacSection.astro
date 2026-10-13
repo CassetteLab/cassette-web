@@ -32,7 +32,7 @@ const shots = [
       </p>
     </div>
 
-    <div class="mac-window" data-mac-window>
+    <div class="mac-window" data-mac-window role="region" aria-label="Cassette on Mac, screenshots" tabindex="0">
       <ul class="mac-track" data-mac-track>
         {
           shots.map((s, i) => (
@@ -103,6 +103,41 @@ const shots = [
     display: block;
     width: 100%;
     height: auto;
+  }
+
+  /* Phones and tablets: a swipeable carousel, edge to edge, each screenshot
+     snapping to the centre with the next one peeking in. */
+  @media (max-width: 899px) {
+    .mac-window {
+      margin-inline: -1rem;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: 1rem;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .mac-window::-webkit-scrollbar {
+      display: none;
+    }
+
+    .mac-window:focus-visible {
+      outline-offset: -2px;
+    }
+
+    .mac-track {
+      display: flex;
+      gap: 0.75rem;
+      width: max-content;
+      padding-inline: 1rem;
+    }
+
+    .mac-shot {
+      flex: none;
+      width: min(84vw, 36rem);
+      scroll-snap-align: center;
+    }
   }
 
 
