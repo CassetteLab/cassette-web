@@ -7,12 +7,14 @@
  * - Hero pieces start hidden only when <html> carries .js-motion (set inline
  *   in the head, with a safety timeout), so a failed script never leaves the
  *   hero blank.
+ * - Smooth wheel scrolling (smooth-scroll.ts) starts here too.
  * - Every split and tween lives inside gsap.matchMedia, so it is reverted
  *   cleanly if the motion preference changes.
  */
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
+import { smoothScroll } from "./smooth-scroll";
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -232,11 +234,13 @@ function buttons() {
 const start = () => {
   const mm = gsap.matchMedia();
   mm.add("(prefers-reduced-motion: no-preference)", () => {
+    const stopSmoothScroll = smoothScroll();
     heroIntro();
     reveals();
     macGallery();
     installWipe();
     buttons();
+    return stopSmoothScroll;
   });
   // Reduced motion: make sure nothing stays hidden.
   mm.add("(prefers-reduced-motion: reduce)", () => {

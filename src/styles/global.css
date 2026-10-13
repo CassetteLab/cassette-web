@@ -84,6 +84,11 @@
     outline-offset: 3px;
   }
 
+  /* Sections focused after an anchor link (smooth-scroll.ts): no ring. */
+  [tabindex="-1"]:focus-visible {
+    outline: none;
+  }
+
   a {
     color: inherit;
   }
