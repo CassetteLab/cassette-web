@@ -14,14 +14,12 @@ const copyText = installCommands.join("\n");
 
 <section id="install" class="install" aria-labelledby="install-title">
   <div class="shell">
-    <h2 id="install-title" class="label install-label">press play</h2>
+    <h2 id="install-title" class="label install-label">Install</h2>
 
     <div class="install-grid">
       <div class="platform">
         <h3 class="platform-name display">iPhone</h3>
-        <p class="platform-body">
-          Public beta on TestFlight. Open the link on your iPhone, install TestFlight if asked, done.
-        </p>
+        <p class="platform-body">The beta is public on TestFlight. Open the link on your iPhone to join it.</p>
         <a class="install-btn fx-roll" href={testflightUrl} rel="noopener" target="_blank">
           <RollLabel text="Join the TestFlight beta" arrow />
         </a>
@@ -29,7 +27,7 @@ const copyText = installCommands.join("\n");
 
       <div class="platform">
         <h3 class="platform-name display">Mac</h3>
-        <p class="platform-body">Three lines in the terminal with Homebrew. Updates come the same way.</p>
+        <p class="platform-body">Install it with Homebrew. Updates come through Homebrew as well.</p>
 
         <div class="term" data-mac-install>
           <pre class="term-code"><code>{copyText}</code></pre>
