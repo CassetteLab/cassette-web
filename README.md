@@ -54,7 +54,7 @@ public/models/        iphone.glb (compressed) and the screen textures
 
 ### The tint
 
-The site takes the color of what's on screen, like the app does with cover art. `--tint` (the color) and `--ink` (black or white on top of it) are registered custom properties on `<html>`, so they animate. Only `setTint()` in `scripts/tint.ts` changes them; it is called by the hero rotation, the showcase panels, the live pill and the 404 page. Each screen's color lives in `data/screens.ts`.
+The site takes the color of what's on screen, like the app does with cover art. `--tint` (the color) and `--ink` (black or white on top of it) are custom properties on `<html>`. They switch instantly; the crossfade comes from each tinted surface transitioning its own background (`transition: var(--tint-fade)`), and text flips black/white at once. Don't animate the variables on `<html>`, nor `color` on a section: inherited values make every element below recompute its style on every frame, which is what stutters on modest machines. Only `setTint()` in `scripts/tint.ts` changes them; it is called by the hero rotation, the showcase panels, the live pill and the 404 page. Each screen's color lives in `data/screens.ts`.
 
 ### Motion
 

@@ -10,7 +10,8 @@
  * The site does the same: the hero rotates through real app screens and
  * writes that screen's color into --tint / --ink on <html>. Everything
  * that wants "the current color" reads these two variables.
- * Registered so the browser can interpolate them (smooth crossfade).
+ * Registered as <color> so invalid values fall back to the initial color
+ * (the crossfade itself is done by each surface, see --tint-fade below).
  */
 @property --tint {
   syntax: "<color>";
@@ -55,9 +56,14 @@
   html {
     --tint: #c1121f;
     --ink: #ffffff;
-    transition:
-      --tint 900ms cubic-bezier(0.4, 0, 0.2, 1),
-      --ink 900ms cubic-bezier(0.4, 0, 0.2, 1);
+    /* The tint crossfade. --tint/--ink switch instantly here: animating an
+       inherited property on <html> made every element of the page recompute
+       its style on every frame (the main cost on modest machines). Instead
+       each tinted surface eases its own background with
+       `transition: var(--tint-fade)`. Text flips black/white at once:
+       fading `color` is inherited by the whole section and costs nearly as
+       much as the old way. */
+    --tint-fade: background-color 900ms cubic-bezier(0.4, 0, 0.2, 1);
     overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
