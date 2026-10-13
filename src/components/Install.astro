@@ -20,7 +20,7 @@ const copyText = installCommands.join("\n");
         <p class="platform-body">
           Public beta on TestFlight. Open the link on your iPhone, install TestFlight if asked, done.
         </p>
-        <a class="install-btn" href={testflightUrl} rel="noopener" target="_blank">
+        <a class="install-btn fx-shine" href={testflightUrl} rel="noopener" target="_blank">
           Join the TestFlight beta
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" /></svg>
         </a>
@@ -32,7 +32,7 @@ const copyText = installCommands.join("\n");
 
         <div class="term" data-mac-install>
           <pre class="term-code"><code>{copyText}</code></pre>
-          <button type="button" class="term-copy" aria-label="Copy install commands">
+          <button type="button" class="term-copy fx-fill" aria-label="Copy install commands">
             <span class="copy-label" aria-live="polite">Copy</span>
           </button>
         </div>
@@ -91,11 +91,7 @@ const copyText = installCommands.join("\n");
     color: var(--tint);
     font-weight: 600;
     text-decoration: none;
-    transition: transform 200ms var(--ease-out-expo);
-  }
-
-  .install-btn:hover {
-    transform: translateY(-2px);
+    --shine: color-mix(in srgb, var(--tint) 45%, transparent);
   }
 
   .install-btn svg {
@@ -146,11 +142,8 @@ const copyText = installCommands.join("\n");
     font-family: var(--font-mono);
     font-size: 0.75rem;
     cursor: pointer;
-    transition: background-color 150ms ease;
-  }
-
-  .term-copy:hover {
-    background-color: rgb(242 240 235 / 0.18);
+    --fill: #f2f0eb;
+    --fill-ink: #0b0b0c;
   }
 
   @media (min-width: 900px) {

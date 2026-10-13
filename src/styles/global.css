@@ -123,6 +123,78 @@
   }
 }
 
+/*
+ * ── Button hovers ─────────────────────────────────────────────
+ * .fx-fill  — outlined buttons: a disc of --fill grows from the point
+ *             where the pointer came in (set by a script in Layout.astro)
+ *             and shrinks back toward where it leaves. Keyboard focus
+ *             fills from the center.
+ * .fx-shine — buttons that are already filled: a sheen of --shine sweeps
+ *             across once per hover.
+ */
+@layer components {
+  .fx-fill,
+  .fx-shine {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .fx-fill {
+    transition: color 380ms var(--ease-out-expo);
+  }
+
+  .fx-fill::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    left: var(--x, 50%);
+    top: var(--y, 50%);
+    width: 240%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--fill, currentColor);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 560ms var(--ease-out-expo);
+    pointer-events: none;
+  }
+
+  .fx-fill:hover::before,
+  .fx-fill:focus-visible::before {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .fx-shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 32%,
+      var(--shine, rgb(255 255 255 / 0.5)) 47%,
+      var(--shine, rgb(255 255 255 / 0.5)) 53%,
+      transparent 68%
+    );
+    transform: translateX(-120%);
+    pointer-events: none;
+  }
+
+  /* The sweep only animates in; leaving snaps it back out of sight. */
+  .fx-shine:hover::after,
+  .fx-shine:focus-visible::after {
+    transform: translateX(120%);
+    transition: transform 900ms cubic-bezier(0.45, 0, 0.2, 1);
+  }
+}
+
+/* Outside the layer, and doubled for weight: a component's own `color`
+   (unlayered, scoped) would otherwise win and leave the label the same
+   color as the fill, i.e. invisible. */
+.fx-fill.fx-fill:hover,
+.fx-fill.fx-fill:focus-visible {
+  color: var(--fill-ink, inherit);
+}
+
 /* ── Scroll reveal ──────────────────────────────────────────── */
 @layer utilities {
   .reveal {

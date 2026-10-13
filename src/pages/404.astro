@@ -19,7 +19,7 @@ const palette = heroScreens.map(({ tint, ink }) => ({ tint, ink }));
         <p class="nf-lede">This track isn’t on the tape.</p>
         <p class="nf-sub">The page you’re looking for doesn’t exist, or it moved.</p>
         <div class="nf-cta">
-          <a class="nf-btn" href="/">Back to side A</a>
+          <a class="nf-btn fx-shine" href="/">Back to side A</a>
           <a class="nf-link" href="/#install">Get Cassette</a>
         </div>
       </div>
@@ -115,11 +115,7 @@ const palette = heroScreens.map(({ tint, ink }) => ({ tint, ink }));
     color: var(--tint);
     font-weight: 600;
     text-decoration: none;
-    transition: transform 200ms var(--ease-out-expo);
-  }
-
-  .nf-btn:hover {
-    transform: translateY(-2px);
+    --shine: color-mix(in srgb, var(--tint) 45%, transparent);
   }
 
   .nf-link {
