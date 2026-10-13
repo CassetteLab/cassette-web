@@ -2,23 +2,23 @@
 const tracks = [
   {
     title: "Native",
-    body: "Swift and SwiftUI from top to bottom, Liquid Glass on iOS 26. There’s no web view anywhere in it.",
+    body: "Written in Swift and SwiftUI, with Liquid Glass on iOS 26.",
   },
   {
     title: "Offline",
-    body: "Download albums and playlists. Your library, search, queue and favorites keep working in airplane mode.",
+    body: "Download albums and playlists. Your library, search and queue still work without a connection.",
   },
   {
     title: "Lossless",
-    body: "FLAC plays as FLAC, with a badge that says so. ReplayGain, crossfade and AirPlay are in there too.",
+    body: "FLAC and other lossless files play untouched and get a badge. ReplayGain, crossfade and AirPlay included.",
   },
   {
     title: "Scrobbles",
-    body: "ListenBrainz built in. Lock screen and Now Playing controls behave like they should.",
+    body: "ListenBrainz scrobbling is built in, along with lock screen and Now Playing controls.",
   },
   {
     title: "Yours",
-    body: "Open source under MPL-2.0. Nothing phones home, and anyone can read the code.",
+    body: "Open source under MPL-2.0. No account and no analytics.",
   },
 ];
 
@@ -28,15 +28,13 @@ const servers = ["Navidrome", "Gonic", "Airsonic", "Ampache", "any OpenSubsonic 
 <section id="tracklist" class="tracklist" aria-labelledby="tracklist-title">
   <div class="shell">
     <div class="tl-head reveal">
-      <p class="label">side a</p>
-      <h2 id="tracklist-title" class="tl-title">What’s on it</h2>
+      <h2 id="tracklist-title" class="label tl-title">Features</h2>
     </div>
 
     <ol class="tl-list">
       {
         tracks.map((t, i) => (
-          <li class="tl-row reveal">
-            <span class="tl-num">A{i + 1}</span>
+          <li class="tl-row">
             <h3 class="tl-name display">{t.title}</h3>
             <p class="tl-body">{t.body}</p>
           </li>
@@ -45,7 +43,7 @@ const servers = ["Navidrome", "Gonic", "Airsonic", "Ampache", "any OpenSubsonic 
     </ol>
 
     <p class="tl-servers reveal">
-      <span class="label">plays from</span>
+      <span class="label">Works with</span>
       <span class="tl-server-list">
         {servers.map((s) => <span>{s}</span>)}
       </span>
@@ -69,11 +67,6 @@ const servers = ["Navidrome", "Gonic", "Airsonic", "Ampache", "any OpenSubsonic 
 
   .tl-title {
     margin: 0;
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--color-text-tertiary);
-    text-transform: lowercase;
   }
 
   .tl-list {
@@ -85,7 +78,7 @@ const servers = ["Navidrome", "Gonic", "Airsonic", "Ampache", "any OpenSubsonic 
   .tl-row {
     position: relative;
     display: grid;
-    grid-template-columns: 2.5rem minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     align-items: baseline;
     column-gap: 0.5rem;
     padding: 1.25rem 0 1.5rem;
@@ -111,15 +104,8 @@ const servers = ["Navidrome", "Gonic", "Airsonic", "Ampache", "any OpenSubsonic 
     opacity: 1;
   }
 
-  .tl-row:hover .tl-body,
-  .tl-row:hover .tl-num {
+  .tl-row:hover .tl-body {
     color: inherit;
-  }
-
-  .tl-num {
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    color: var(--color-text-tertiary);
   }
 
   .tl-name {
@@ -128,7 +114,6 @@ const servers = ["Navidrome", "Gonic", "Airsonic", "Ampache", "any OpenSubsonic 
   }
 
   .tl-body {
-    grid-column: 2;
     margin: 0.75rem 0 0;
     max-width: 26rem;
     font-size: 1.0625rem;
@@ -165,7 +150,7 @@ const servers = ["Navidrome", "Gonic", "Airsonic", "Ampache", "any OpenSubsonic 
     }
 
     .tl-row {
-      grid-template-columns: 5rem minmax(0, 1fr) minmax(0, 24rem);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
       align-items: center;
       padding: 0.75rem 0;
     }
@@ -176,7 +161,6 @@ const servers = ["Navidrome", "Gonic", "Airsonic", "Ampache", "any OpenSubsonic 
     }
 
     .tl-body {
-      grid-column: 3;
       margin: 0;
     }
   }

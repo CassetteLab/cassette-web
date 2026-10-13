@@ -14,7 +14,7 @@ import artist from "../assets/screens/iphone-artist.png";
 export interface HeroScreen {
   img: ImageMetadata;
   alt: string;
-  /** What's on screen, shown in the hero's "now on screen" list. */
+  /** What's on screen, shown in the hero's "In the app" list. */
   title: string;
   by: string;
   tint: string;
@@ -25,32 +25,32 @@ export const heroScreens: HeroScreen[] = [
   {
     img: player,
     alt: "Cassette's player on iPhone, playing Vampire love story by Jardin Public, the screen tinted red by the cover art.",
-    title: "vampire love story",
-    by: "jardin public",
+    title: "Vampire love story",
+    by: "Jardin Public",
     tint: "#b8111e",
     ink: "#ffffff",
   },
   {
     img: album,
     alt: "An album page in Cassette on iPhone: Random Access Memories by Daft Punk, with its track list.",
-    title: "random access memories",
-    by: "daft punk",
+    title: "Random Access Memories",
+    by: "Daft Punk",
     tint: "#8a91a8",
     ink: "#0b0b0c",
   },
   {
     img: playlist,
     alt: "A playlist in Cassette on iPhone, the whole screen tinted pink by its cover.",
-    title: "cassette · workout",
-    by: "a playlist",
+    title: "Cassette · Workout",
+    by: "Playlist",
     tint: "#b71b48",
     ink: "#ffffff",
   },
   {
     img: artist,
     alt: "An artist page in Cassette on iPhone: Zed Yun Pavarotti, with his latest release.",
-    title: "zed yun pavarotti",
-    by: "an artist page",
+    title: "Zed Yun Pavarotti",
+    by: "Artist page",
     tint: "#d6d3dc",
     ink: "#0b0b0c",
   },

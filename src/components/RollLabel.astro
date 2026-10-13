@@ -1,0 +1,36 @@
+---
+/*
+ * Button label that rolls letter by letter on hover (with .fx-roll on the
+ * button): each letter slides up out of view while its twin slides in from
+ * below, slightly staggered. Optional arrow does the same diagonally.
+ *
+ * Screen readers get the plain text once; the animated letters are hidden.
+ */
+interface Props {
+  text: string;
+  arrow?: boolean;
+}
+
+const { text, arrow = false } = Astro.props;
+const chars = [...text];
+const row = (twin: boolean) =>
+  chars.map((c, i) => ({ c: c === " " ? " " : c, i, twin }));
+---
+
+<span class="sr-only">{text}</span>
+<span class="roll" aria-hidden="true">
+  <span class="roll-row">
+    {row(false).map(({ c, i }) => <span class="roll-ch" style={`--i:${i}`}>{c}</span>)}
+  </span>
+  <span class="roll-row roll-twin">
+    {row(true).map(({ c, i }) => <span class="roll-ch" style={`--i:${i}`}>{c}</span>)}
+  </span>
+</span>
+{
+  arrow && (
+    <span class="roll-arrow" aria-hidden="true">
+      <svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5" /></svg>
+      <svg viewBox="0 0 16 16"><path d="M5 11 11 5M6 5h5v5" /></svg>
+    </span>
+  )
+}

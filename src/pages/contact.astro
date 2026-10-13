@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Footer from "../components/Footer.astro";
+import RollLabel from "../components/RollLabel.astro";
 ---
 
 <Layout
@@ -94,8 +95,9 @@ import Footer from "../components/Footer.astro";
               support@getcassette.app
             </a>
           </p>
-          <button type="submit" id="submit-btn" class="submit-btn fx-shine">
-            <span class="btn-text">Send message</span>
+          <button type="submit" id="submit-btn" class="submit-btn fx-roll">
+            <span class="btn-text"><RollLabel text="Send message" /></span>
+            <span class="btn-sending" hidden>Sending…</span>
             <svg class="btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M3 8h10M9 4l4 4-4 4"/>
             </svg>
@@ -308,9 +310,6 @@ import Footer from "../components/Footer.astro";
     white-space: nowrap;
   }
 
-  .submit-btn:disabled::after {
-    display: none;
-  }
 
   .submit-btn:disabled {
     opacity: 0.6;
@@ -359,7 +358,13 @@ import Footer from "../components/Footer.astro";
   const errorEl  = document.getElementById("form-error");
   const successEl = document.getElementById("form-success");
   const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement | null;
-  const btnText  = submitBtn?.querySelector(".btn-text");
+  const btnText  = submitBtn?.querySelector<HTMLElement>(".btn-text");
+  const btnSending = submitBtn?.querySelector<HTMLElement>(".btn-sending");
+  // Swap labels instead of rewriting text, so the rolling label survives.
+  const setSending = (on: boolean) => {
+    if (btnText) btnText.hidden = on;
+    if (btnSending) btnSending.hidden = !on;
+  };
   const btnArrow = submitBtn?.querySelector(".btn-arrow") as HTMLElement | null;
 
   form?.addEventListener("submit", async (e) => {
@@ -381,7 +386,7 @@ import Footer from "../components/Footer.astro";
 
     // Loading state
     if (submitBtn) submitBtn.disabled = true;
-    if (btnText)   btnText.textContent = "Sending…";
+    setSending(true);
     if (btnArrow)  btnArrow.style.display = "none";
 
     try {
@@ -406,7 +411,7 @@ import Footer from "../components/Footer.astro";
       }
       // Restore button
       if (submitBtn) submitBtn.disabled = false;
-      if (btnText)   btnText.textContent = "Send message";
+      setSending(false);
       if (btnArrow)  btnArrow.style.display = "";
     }
   });

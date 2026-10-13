@@ -3,7 +3,7 @@
 const stats = [
   { value: "1,300+", caption: "people in the public TestFlight beta" },
   { value: "150+", caption: "stars on GitHub" },
-  { value: "0", caption: "trackers. You don't even make an account." },
+  { value: "0", caption: "trackers or analytics in the app" },
 ];
 
 // Real messages from testers. Anonymous, quoted as received.
@@ -16,12 +16,12 @@ const quotes = [
 
 <section class="proof" aria-labelledby="proof-title">
   <div class="shell">
-    <h2 id="proof-title" class="label reveal">people actually use it</h2>
+    <h2 id="proof-title" class="label reveal">Testers</h2>
 
     <dl class="stats">
       {
         stats.map((s, i) => (
-          <div class="stat reveal" style={`--delay: ${i * 80}ms`}>
+          <div class="stat" style={`--delay: ${i * 80}ms`}>
             <dt class="stat-caption">{s.caption}</dt>
             <dd class="stat-value display">{s.value}</dd>
           </div>
@@ -36,11 +36,11 @@ const quotes = [
     <ul class="quotes">
       {
         quotes.map((q, i) => (
-          <li class="quote reveal" style={`--delay: ${i * 90}ms`}>
+          <li class="quote" style={`--delay: ${i * 90}ms`}>
             <blockquote>
               <p>“{q.replace(/^“|”$/g, "")}”</p>
             </blockquote>
-            <p class="quote-by">a TestFlight tester</p>
+            <p class="quote-by">TestFlight tester</p>
           </li>
         ))
       }

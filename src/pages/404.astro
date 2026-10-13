@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Footer from "../components/Footer.astro";
+import RollLabel from "../components/RollLabel.astro";
 import { heroScreens } from "../data/screens";
 
 // Each visit to a dead link lands on a different color from the hero rotation.
@@ -10,7 +11,7 @@ const palette = heroScreens.map(({ tint, ink }) => ({ tint, ink }));
 <Layout title="Not found · Cassette" description="This page doesn't exist." noindex={true}>
   <main class="nf" data-nf data-palette={JSON.stringify(palette)}>
     <div class="nf-stage shell">
-      <p class="nf-label">side c · track 404</p>
+      <p class="nf-label">Error 404</p>
       <h1 class="nf-code display">
         <span aria-hidden="true">404</span>
         <span class="sr-only">Page not found</span>
@@ -19,7 +20,7 @@ const palette = heroScreens.map(({ tint, ink }) => ({ tint, ink }));
         <p class="nf-lede">This track isn’t on the tape.</p>
         <p class="nf-sub">The page you’re looking for doesn’t exist, or it moved.</p>
         <div class="nf-cta">
-          <a class="nf-btn fx-shine" href="/">Back to side A</a>
+          <a class="nf-btn fx-roll" href="/"><RollLabel text="Back to the home page" /></a>
           <a class="nf-link" href="/#install">Get Cassette</a>
         </div>
       </div>
@@ -115,7 +116,6 @@ const palette = heroScreens.map(({ tint, ink }) => ({ tint, ink }));
     color: var(--tint);
     font-weight: 600;
     text-decoration: none;
-    --shine: color-mix(in srgb, var(--tint) 45%, transparent);
   }
 
   .nf-link {

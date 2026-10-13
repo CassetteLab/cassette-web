@@ -138,10 +138,25 @@ const jsonLd = {
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
 
+    <!-- Motion: hide the hero pieces GSAP is about to reveal, before first
+         paint. Skipped for reduced motion; the timeout un-hides everything
+         if the script never runs. -->
+    <script is:inline>
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("js-motion");
+        setTimeout(function () {
+          document.documentElement.classList.remove("js-motion");
+        }, 4000);
+      }
+    </script>
   </head>
   <body class="min-h-dvh bg-bg-primary text-text-primary antialiased">
     <Nav />
     <slot />
+
+    <script>
+      import "../scripts/motion.ts";
+    </script>
 
     <script>
       /* .fx-fill buttons: remember where the pointer entered/left so the

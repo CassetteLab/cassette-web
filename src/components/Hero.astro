@@ -2,6 +2,7 @@
 import { Image } from "astro:assets";
 import { heroScreens } from "../data/screens";
 import NowPlaying from "./NowPlaying.astro";
+import RollLabel from "./RollLabel.astro";
 
 const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
 const first = heroScreens[0];
@@ -10,13 +11,15 @@ const first = heroScreens[0];
 <section class="hero" data-hero aria-labelledby="hero-title">
   <div class="hero-stage shell">
     <h1 id="hero-title" class="hero-word display">
-      <span aria-hidden="true">Cassette</span>
+      <span aria-hidden="true" data-hero-word data-intro>Cassette</span>
       <span class="sr-only">
         Cassette, a native iOS and macOS music player for Navidrome, Subsonic and OpenSubsonic servers
       </span>
     </h1>
 
     <div class="hero-phone" data-hero-phone>
+      <div class="phone-parallax" data-phone-parallax>
+      <div class="phone-motion" data-phone-motion data-intro>
       {
         heroScreens.map((s, i) => (
           <Image
@@ -25,7 +28,7 @@ const first = heroScreens[0];
             widths={[320, 480, 720, 960]}
             sizes="(min-width: 768px) 44vh, 64vw"
             class:list={["phone-img", { "is-active": i === 0 }]}
-            loading={i === 0 ? "eager" : "lazy"}
+            loading="eager"
             fetchpriority={i === 0 ? "high" : "auto"}
             decoding={i === 0 ? "sync" : "async"}
             data-screen={i}
@@ -33,9 +36,11 @@ const first = heroScreens[0];
           />
         ))
       }
+      </div>
+      </div>
     </div>
 
-    <div class="hero-intro">
+    <div class="hero-intro" data-intro>
       <NowPlaying />
       <p class="hero-lede">
         A native iPhone and Mac app for the music on your own server.
@@ -45,16 +50,15 @@ const first = heroScreens[0];
       </p>
 
       <div class="hero-cta">
-        <a class="btn-solid fx-shine" href={testflightUrl} rel="noopener" target="_blank">
-          Join the beta
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" /></svg>
+        <a class="btn-solid fx-roll" href={testflightUrl} rel="noopener" target="_blank">
+          <RollLabel text="Join the beta" arrow />
         </a>
         <a class="btn-line fx-fill" href="#install">Get it on Mac</a>
       </div>
     </div>
 
-    <div class="hero-deck" data-hero-deck>
-      <p class="deck-label">on screen</p>
+    <div class="hero-deck" data-hero-deck data-intro>
+      <p class="deck-label">In the app</p>
       <ol class="deck-list">
         {
           heroScreens.map((s, i) => (
@@ -117,6 +121,11 @@ const first = heroScreens[0];
     pointer-events: none;
   }
 
+  /* Inline-block so GSAP's scroll parallax can transform it. */
+  [data-hero-word] {
+    display: inline-block;
+  }
+
   /* ── The phone ────────────────────────────────────────── */
   .hero-phone {
     position: relative;
@@ -128,21 +137,54 @@ const first = heroScreens[0];
     filter: drop-shadow(0 40px 50px rgb(0 0 0 / 0.32));
   }
 
+  /* Two wrappers so GSAP never touches the positioning transform on
+     .hero-phone (desktop centering), and so the scroll parallax and the
+     intro never animate the same element. */
+  .phone-parallax,
+  .phone-motion {
+    display: grid;
+    width: 100%;
+    height: 100%;
+  }
+
+  /*
+   * Screen changes are a wipe, never a crossfade: the incoming screenshot is
+   * revealed from the bottom up on top of the outgoing one. Every screenshot
+   * shares the same phone frame, so only the screen appears to change.
+   */
   .phone-img {
     grid-area: 1 / 1;
     width: 100%;
     height: 100%;
     object-fit: contain;
-    opacity: 0;
-    transform: translateY(14px) scale(0.985);
-    transition:
-      opacity 600ms var(--ease-out-expo),
-      transform 900ms var(--ease-out-expo);
+    visibility: hidden;
+    z-index: 0;
+  }
+
+  .phone-img.is-active,
+  .phone-img.is-leaving {
+    visibility: visible;
+  }
+
+  .phone-img.is-leaving {
+    z-index: 1;
   }
 
   .phone-img.is-active {
-    opacity: 1;
-    transform: none;
+    z-index: 2;
+  }
+
+  .phone-img.is-entering {
+    animation: screen-in 820ms cubic-bezier(0.76, 0, 0.18, 1) both;
+  }
+
+  @keyframes screen-in {
+    from {
+      clip-path: inset(100% 0 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
   }
 
   /* ── Intro + CTAs ─────────────────────────────────────── */
@@ -193,7 +235,6 @@ const first = heroScreens[0];
   .btn-solid {
     background-color: var(--ink);
     color: var(--tint);
-    --shine: color-mix(in srgb, var(--tint) 45%, transparent);
   }
 
   .btn-solid svg {
@@ -370,8 +411,8 @@ const first = heroScreens[0];
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .phone-img {
-      transform: none;
+    .phone-img.is-entering {
+      animation: none;
     }
   }
 </style>
@@ -404,13 +445,30 @@ const first = heroScreens[0];
     };
 
     const show = (i: number) => {
-      current = (i + imgs.length) % imgs.length;
+      const next = (i + imgs.length) % imgs.length;
+      const prev = current;
+      current = next;
       imgs.forEach((img, k) => {
-        const on = k === current;
-        img.classList.toggle("is-active", on);
-        if (on) img.removeAttribute("aria-hidden");
+        img.classList.remove("is-leaving", "is-entering");
+        img.classList.toggle("is-active", k === next);
+        if (k === next) img.removeAttribute("aria-hidden");
         else img.setAttribute("aria-hidden", "true");
       });
+      // Wipe the new screen in over the old one (skipped on first paint).
+      if (prev !== next) {
+        const incoming = imgs[next];
+        imgs[prev].classList.add("is-leaving");
+        void incoming.offsetWidth; // restart the animation if re-entered quickly
+        incoming.classList.add("is-entering");
+        incoming.addEventListener(
+          "animationend",
+          () => {
+            incoming.classList.remove("is-entering");
+            imgs[prev].classList.remove("is-leaving");
+          },
+          { once: true },
+        );
+      }
       btns.forEach((b, k) => b.setAttribute("aria-pressed", String(k === current)));
       const { tint = "#0b0b0c", ink = "#ffffff" } = btns[current].dataset;
       root.style.setProperty("--tint", tint);
