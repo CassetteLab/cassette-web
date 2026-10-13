@@ -26,6 +26,9 @@ import { heroScreens } from "../data/screens";
             </p>
             <h3 class="sc-name display">{s.name}</h3>
             <p class="sc-line">{s.line}</p>
+            <ul class="sc-points" aria-label="Details">
+              {s.points.map((pt) => <li>{pt}</li>)}
+            </ul>
           </div>
           <div class="sc-fallback">
             <Image src={s.img} alt={s.alt} widths={[360, 540, 720]} sizes="(min-width: 640px) 40vw, 72vw" loading="lazy" />
@@ -66,7 +69,7 @@ import { heroScreens } from "../data/screens";
 
   .sc-name {
     margin: 0.75rem 0 0;
-    font-size: clamp(4rem, 14vw, 10rem);
+    font-size: clamp(4rem, 15vw, 8.5rem);
   }
 
   .sc-line {
@@ -74,6 +77,23 @@ import { heroScreens } from "../data/screens";
     max-width: 26rem;
     font-size: 1.25rem;
     line-height: 1.45;
+  }
+
+  .sc-points {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .sc-points li {
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 40%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
   }
 
   .sc-fallback {
@@ -113,7 +133,11 @@ import { heroScreens } from "../data/screens";
   }
 
   :global(html[data-3d]) .sc-text {
-    max-width: calc(50% - 13rem);
+    max-width: calc(50% - 12rem);
+  }
+
+  :global(html[data-3d]) .sc-name {
+    font-size: min(7.4vw, 8.5rem);
   }
 
   :global(html[data-3d]) .is-right .sc-text {

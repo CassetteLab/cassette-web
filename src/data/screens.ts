@@ -21,9 +21,11 @@ export interface HeroScreen {
   ink: string;
   /** Screen texture for the 3D phone (public/models/screens). */
   texture: string;
-  /** Showcase section: what this screen is, and one line about it. */
+  /** Showcase section: the argument this screen carries, a line about it,
+      and a few short spec tags. */
   name: string;
   line: string;
+  points: string[];
 }
 
 export const heroScreens: HeroScreen[] = [
@@ -35,8 +37,9 @@ export const heroScreens: HeroScreen[] = [
     tint: "#b8111e",
     ink: "#ffffff",
     texture: "/models/screens/player.webp",
-    name: "Now playing",
-    line: "The cover sets the color of the whole screen. Lyrics and the queue open without leaving the player.",
+    name: "Native",
+    line: "Swift and SwiftUI from top to bottom. It scrolls, animates and plays like the apps that came with your iPhone, Liquid Glass included.",
+    points: ["Swift 6", "SwiftUI", "No web view"],
   },
   {
     img: album,
@@ -46,8 +49,9 @@ export const heroScreens: HeroScreen[] = [
     tint: "#8a91a8",
     ink: "#0b0b0c",
     texture: "/models/screens/album.webp",
-    name: "Albums",
-    line: "Tracks, year and file format at a glance. Play it, shuffle it or download it from the top of the page.",
+    name: "Self-hosted",
+    line: "Talks to Navidrome, Gonic, Ampache or any OpenSubsonic server through SwiftSonic, its own open-source client library. A reverse proxy or Cloudflare Access in front is fine.",
+    points: ["OpenSubsonic", "Custom headers", "Keychain"],
   },
   {
     img: playlist,
@@ -57,8 +61,9 @@ export const heroScreens: HeroScreen[] = [
     tint: "#b71b48",
     ink: "#ffffff",
     texture: "/models/screens/playlist.webp",
-    name: "Playlists",
-    line: "Edit them in place, add music from anywhere in your library, or let smart shuffle pick.",
+    name: "Integrated",
+    line: "Lock screen, Control Center and AirPlay all work. Your own server behaves like Apple Music, without the subscription.",
+    points: ["Now Playing", "AirPlay", "ListenBrainz"],
   },
   {
     img: artist,
@@ -68,7 +73,8 @@ export const heroScreens: HeroScreen[] = [
     tint: "#d6d3dc",
     ink: "#0b0b0c",
     texture: "/models/screens/artist.webp",
-    name: "Artists",
-    line: "Latest release, top tracks and similar artists, on one page.",
+    name: "Free",
+    line: "Open source under MPL-2.0, with nothing to sign up for. No ads and no analytics. It is funded by the people who use it.",
+    points: ["MPL-2.0", "No account", "No tracking"],
   },
 ];
