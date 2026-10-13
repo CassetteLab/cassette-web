@@ -130,16 +130,16 @@ import { heroScreens } from "../data/screens";
 </style>
 
 <script>
+  import { setTint } from "../scripts/tint";
+
   // The section takes the color of the screen whose panel is in view.
   const panels = document.querySelectorAll<HTMLElement>("[data-sc-panel]");
-  const root = document.documentElement;
   const io = new IntersectionObserver(
     (entries) => {
       for (const e of entries) {
         if (!e.isIntersecting) continue;
         const { tint, ink } = (e.target as HTMLElement).dataset;
-        if (tint) root.style.setProperty("--tint", tint);
-        if (ink) root.style.setProperty("--ink", ink);
+        if (tint && ink) setTint({ tint, ink });
       }
     },
     { rootMargin: "-45% 0px -45% 0px" },

@@ -217,7 +217,7 @@ export async function start() {
   // ── Hero: a quick spin each time the hero changes screen ────
   let spin: gsap.core.Tween | null = null;
   window.addEventListener("hero:screen", (e) => {
-    const next = (e as CustomEvent<{ index: number }>).detail.index;
+    const next = e.detail.index;
     if (pose.screen >= -0.5) {
       heroIndex = next; // phone is past the hero, nothing to show
       return;

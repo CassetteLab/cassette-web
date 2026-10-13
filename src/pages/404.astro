@@ -30,14 +30,13 @@ const palette = heroScreens.map(({ tint, ink }) => ({ tint, ink }));
 </Layout>
 
 <script>
+  import { setTint } from "../scripts/tint";
+
   const nf = document.querySelector<HTMLElement>("[data-nf]");
   try {
     const palette: { tint: string; ink: string }[] = JSON.parse(nf?.dataset.palette ?? "[]");
     const pick = palette[Math.floor(Math.random() * palette.length)];
-    if (pick) {
-      document.documentElement.style.setProperty("--tint", pick.tint);
-      document.documentElement.style.setProperty("--ink", pick.ink);
-    }
+    if (pick) setTint(pick);
   } catch {
     /* keep the default red */
   }
