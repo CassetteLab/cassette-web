@@ -144,6 +144,26 @@ const jsonLd = {
     <slot />
 
     <script>
+      /* .fx-fill buttons: remember where the pointer entered/left so the
+         fill grows from (and shrinks toward) that point. */
+      const setOrigin = (e: PointerEvent) => {
+        const el = (e.target as Element | null)?.closest<HTMLElement>(".fx-fill");
+        if (!el || el.contains(e.relatedTarget as Node | null)) return;
+        const r = el.getBoundingClientRect();
+        el.style.setProperty("--x", `${e.clientX - r.left}px`);
+        el.style.setProperty("--y", `${e.clientY - r.top}px`);
+      };
+      document.addEventListener("pointerover", setOrigin);
+      document.addEventListener("pointerout", setOrigin);
+      // Keyboard focus fills from the center.
+      document.addEventListener("focusin", (e) => {
+        const el = (e.target as Element | null)?.closest<HTMLElement>(".fx-fill");
+        el?.style.removeProperty("--x");
+        el?.style.removeProperty("--y");
+      });
+    </script>
+
+    <script>
       /* ── Scroll-triggered reveal ─────────────────────── */
       const observer = new IntersectionObserver(
         (entries) => {

@@ -45,11 +45,11 @@ const first = heroScreens[0];
       </p>
 
       <div class="hero-cta">
-        <a class="btn-solid" href={testflightUrl} rel="noopener" target="_blank">
+        <a class="btn-solid fx-shine" href={testflightUrl} rel="noopener" target="_blank">
           Join the beta
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" /></svg>
         </a>
-        <a class="btn-line" href="#install">Get it on Mac</a>
+        <a class="btn-line fx-fill" href="#install">Get it on Mac</a>
       </div>
     </div>
 
@@ -188,12 +188,12 @@ const first = heroScreens[0];
     font-weight: 600;
     letter-spacing: -0.01em;
     text-decoration: none;
-    transition: transform 200ms var(--ease-out-expo), background-color 200ms ease, color 200ms ease;
   }
 
   .btn-solid {
     background-color: var(--ink);
     color: var(--tint);
+    --shine: color-mix(in srgb, var(--tint) 45%, transparent);
   }
 
   .btn-solid svg {
@@ -209,16 +209,8 @@ const first = heroScreens[0];
   .btn-line {
     box-shadow: inset 0 0 0 1.5px var(--ink);
     color: var(--ink);
-  }
-
-  .btn-solid:hover,
-  .btn-line:hover {
-    transform: translateY(-2px);
-  }
-
-  .btn-line:hover {
-    background-color: var(--ink);
-    color: var(--tint);
+    --fill: var(--ink);
+    --fill-ink: var(--tint);
   }
 
   /* ── Deck (which screen is showing) ───────────────────── */
