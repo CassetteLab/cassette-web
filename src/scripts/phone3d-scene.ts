@@ -260,8 +260,23 @@ export async function start() {
     .to(pose, { ry: -TAU - 0.12, duration: 0.1 }, ">");
 
   // 2. Showcase: between consecutive panels, sidestep + full turn + glint.
+  // Timeline time == panel index (0..n-1), so snapping to multiples of
+  // 1/(n-1) of the scroll lands each panel dead centre, transition finished.
+  const steps = Math.max(1, panels.length - 1);
   const tl = gsap.timeline({
-    scrollTrigger: { trigger: showcase, start: "top top", end: "bottom bottom", scrub: 0.6 },
+    scrollTrigger: {
+      trigger: showcase,
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0.6,
+      snap: {
+        snapTo: 1 / steps,
+        directional: true, // a nudge down goes to the next screen, not back
+        duration: { min: 0.35, max: 0.9 },
+        delay: 0.08,
+        ease: "power2.inOut",
+      },
+    },
     defaults: { ease: "power2.inOut" },
   });
   for (let i = 1; i < panels.length; i++) {
@@ -272,7 +287,8 @@ export async function start() {
       .fromTo(pose, { glint: 0.001 }, { glint: 0.999, duration: 0.25, ease: "none", immediateRender: false }, at + 0.72)
       .set(pose, { glint: 0 }, at + 0.98);
   }
-  tl.to({}, { duration: 0.2 }, ">"); // hold on the last screen
+  // Pad to exactly n-1 so time and scroll progress line up for the snap.
+  if (tl.duration() < steps) tl.to({}, { duration: steps - tl.duration() }, tl.duration());
 
   // 3. Exit: up and away with the end of the section.
   gsap.timeline({
