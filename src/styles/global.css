@@ -129,12 +129,12 @@
  *             where the pointer came in (set by a script in Layout.astro)
  *             and shrinks back toward where it leaves. Keyboard focus
  *             fills from the center.
- * .fx-shine — buttons that are already filled: a sheen of --shine sweeps
- *             across once per hover.
+ * .fx-roll  — buttons that are already filled: the label rolls letter by
+ *             letter to an identical twin, the arrow exits and re-enters
+ *             diagonally (markup from RollLabel.astro).
  */
 @layer components {
-  .fx-fill,
-  .fx-shine {
+  .fx-fill {
     position: relative;
     isolation: isolate;
     overflow: hidden;
@@ -164,26 +164,81 @@
     transform: translate(-50%, -50%) scale(1);
   }
 
-  .fx-shine::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      105deg,
-      transparent 32%,
-      var(--shine, rgb(255 255 255 / 0.5)) 47%,
-      var(--shine, rgb(255 255 255 / 0.5)) 53%,
-      transparent 68%
-    );
-    transform: translateX(-120%);
-    pointer-events: none;
+  /* Rolling label (src/components/RollLabel.astro). */
+  .fx-roll .roll {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Room for descenders inside the clip, without changing the button size. */
+    padding-block: 0.15em;
+    margin-block: -0.15em;
   }
 
-  /* The sweep only animates in; leaving snaps it back out of sight. */
-  .fx-shine:hover::after,
-  .fx-shine:focus-visible::after {
-    transform: translateX(120%);
-    transition: transform 900ms cubic-bezier(0.45, 0, 0.2, 1);
+  .fx-roll .roll-row {
+    display: flex;
+    white-space: pre;
+  }
+
+  .fx-roll .roll-twin {
+    position: absolute;
+    inset: 0.15em 0 auto;
+  }
+
+  .fx-roll .roll-ch {
+    display: inline-block;
+    transition: transform 560ms cubic-bezier(0.7, 0, 0.2, 1);
+    transition-delay: calc(var(--i) * 16ms);
+  }
+
+  .fx-roll .roll-twin .roll-ch {
+    transform: translateY(130%);
+  }
+
+  .fx-roll:hover .roll-row:not(.roll-twin) .roll-ch,
+  .fx-roll:focus-visible .roll-row:not(.roll-twin) .roll-ch {
+    transform: translateY(-130%);
+  }
+
+  .fx-roll:hover .roll-twin .roll-ch,
+  .fx-roll:focus-visible .roll-twin .roll-ch {
+    transform: translateY(0);
+  }
+
+  .fx-roll .roll-arrow {
+    position: relative;
+    display: inline-block;
+    width: 0.875rem;
+    height: 0.875rem;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .fx-roll .roll-arrow svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 520ms cubic-bezier(0.7, 0, 0.2, 1) 60ms;
+  }
+
+  .fx-roll .roll-arrow svg + svg {
+    transform: translate(-120%, 120%);
+  }
+
+  .fx-roll:hover .roll-arrow svg:first-child,
+  .fx-roll:focus-visible .roll-arrow svg:first-child {
+    transform: translate(120%, -120%);
+  }
+
+  .fx-roll:hover .roll-arrow svg + svg,
+  .fx-roll:focus-visible .roll-arrow svg + svg {
+    transform: translate(0, 0);
   }
 }
 

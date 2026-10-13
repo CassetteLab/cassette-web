@@ -1,4 +1,6 @@
 ---
+import RollLabel from "./RollLabel.astro";
+
 const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
 
 // macOS install commands — exact, do not alter.
@@ -20,9 +22,8 @@ const copyText = installCommands.join("\n");
         <p class="platform-body">
           Public beta on TestFlight. Open the link on your iPhone, install TestFlight if asked, done.
         </p>
-        <a class="install-btn fx-shine" href={testflightUrl} rel="noopener" target="_blank">
-          Join the TestFlight beta
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" /></svg>
+        <a class="install-btn fx-roll" href={testflightUrl} rel="noopener" target="_blank">
+          <RollLabel text="Join the TestFlight beta" arrow />
         </a>
       </div>
 
@@ -91,7 +92,6 @@ const copyText = installCommands.join("\n");
     color: var(--tint);
     font-weight: 600;
     text-decoration: none;
-    --shine: color-mix(in srgb, var(--tint) 45%, transparent);
   }
 
   .install-btn svg {

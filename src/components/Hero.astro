@@ -2,6 +2,7 @@
 import { Image } from "astro:assets";
 import { heroScreens } from "../data/screens";
 import NowPlaying from "./NowPlaying.astro";
+import RollLabel from "./RollLabel.astro";
 
 const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
 const first = heroScreens[0];
@@ -47,9 +48,8 @@ const first = heroScreens[0];
       </p>
 
       <div class="hero-cta">
-        <a class="btn-solid fx-shine" href={testflightUrl} rel="noopener" target="_blank">
-          Join the beta
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5" /></svg>
+        <a class="btn-solid fx-roll" href={testflightUrl} rel="noopener" target="_blank">
+          <RollLabel text="Join the beta" arrow />
         </a>
         <a class="btn-line fx-fill" href="#install">Get it on Mac</a>
       </div>
@@ -203,7 +203,6 @@ const first = heroScreens[0];
   .btn-solid {
     background-color: var(--ink);
     color: var(--tint);
-    --shine: color-mix(in srgb, var(--tint) 45%, transparent);
   }
 
   .btn-solid svg {

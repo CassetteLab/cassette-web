@@ -96,10 +96,10 @@ function heroIntro() {
     tl.from($$(".deck-label, .deck-list li", deck), { x: 24, autoAlpha: 0, duration: 0.9, stagger: 0.06 }, 0.85);
   }
 
-  // Scroll: the word sinks and fades a little, the phone rises past it.
+  // Scroll: a light parallax, the word drifts down a touch while the phone lifts.
   const scroll = { trigger: hero, start: "top top", end: "bottom top", scrub: true };
-  if (word) gsap.to(word, { yPercent: 22, ease: "none", scrollTrigger: scroll });
-  if (phone) gsap.to(phone, { yPercent: -12, scale: 0.96, ease: "none", scrollTrigger: { ...scroll } });
+  if (word) gsap.to(word, { yPercent: 8, ease: "none", scrollTrigger: scroll });
+  if (phone) gsap.to(phone, { yPercent: -4, ease: "none", scrollTrigger: { ...scroll } });
 }
 
 function proof() {
