@@ -16,7 +16,10 @@ const shots = [
   <div class="shell">
     <div class="mac-head">
       <p class="label reveal">Mac</p>
-      <h2 id="mac-title" class="mac-title display">Also on Mac</h2>
+      <h2 id="mac-title" class="mac-title display">
+        <span class="mac-line">Also on</span>
+        <span class="mac-line">Mac</span>
+      </h2>
       <p class="mac-body reveal">
         The same library on your Mac, with a sidebar and keyboard shortcuts. It installs through Homebrew as a notarized app; there is no Mac App Store version.
       </p>
@@ -54,6 +57,13 @@ const shots = [
     gap: 1rem;
     padding-top: 1rem;
     border-top: 1px solid var(--color-border-subtle);
+  }
+
+  /* Always two lines: left to wrap on its own, the title broke differently
+     while its letters were split for the reveal and after. */
+  .mac-line {
+    display: block;
+    white-space: nowrap;
   }
 
   .mac-title {
