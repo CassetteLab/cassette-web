@@ -263,6 +263,21 @@ export async function start() {
   // Timeline time == panel index (0..n-1), so snapping to multiples of
   // 1/(n-1) of the scroll lands each panel dead centre, transition finished.
   const steps = Math.max(1, panels.length - 1);
+
+  // Snap back to the current panel unless the scroll went past a threshold
+  // toward the next (or previous) one. Avoids a light nudge skipping ahead.
+  const THRESHOLD = 0.35; // fraction of the distance between two panels
+  let current = 0;
+  const snapTo = (progress: number) => {
+    const raw = progress * steps;
+    const delta = raw - current;
+    let target = current;
+    if (delta >= THRESHOLD) target = Math.max(current + 1, Math.round(raw));
+    else if (delta <= -THRESHOLD) target = Math.min(current - 1, Math.round(raw));
+    target = Math.min(steps, Math.max(0, target));
+    current = target;
+    return target / steps;
+  };
   const tl = gsap.timeline({
     scrollTrigger: {
       trigger: showcase,
@@ -270,12 +285,15 @@ export async function start() {
       end: "bottom bottom",
       scrub: 0.6,
       snap: {
-        snapTo: 1 / steps,
-        directional: true, // a nudge down goes to the next screen, not back
+        snapTo,
+        directional: false,
         duration: { min: 0.35, max: 0.9 },
-        delay: 0.08,
+        delay: 0.12,
         ease: "power2.inOut",
       },
+      // Entering from above starts on the first panel, from below on the last.
+      onEnter: () => (current = 0),
+      onEnterBack: () => (current = steps),
     },
     defaults: { ease: "power2.inOut" },
   });

@@ -3,9 +3,8 @@
  * "In the app": one panel per screen. With the 3D phone (desktop), the phone
  * is pinned in the middle of the viewport and the copy alternates around it;
  * the section takes each screen's color. Without it (phones, reduced motion,
- * no WebGL), each panel simply shows its screenshot next to the copy.
+ * no WebGL) the panels are copy only: the screenshots are already in the hero.
  */
-import { Image } from "astro:assets";
 import { heroScreens } from "../data/screens";
 ---
 
@@ -30,9 +29,6 @@ import { heroScreens } from "../data/screens";
               {s.points.map((pt) => <li>{pt}</li>)}
             </ul>
           </div>
-          <div class="sc-fallback">
-            <Image src={s.img} alt={s.alt} widths={[360, 540, 720]} sizes="(min-width: 640px) 40vw, 72vw" loading="lazy" />
-          </div>
         </div>
       </article>
     ))
@@ -49,8 +45,18 @@ import { heroScreens } from "../data/screens";
   .sc-panel {
     display: flex;
     align-items: center;
+    padding-block: 4rem;
+  }
+
+  .sc-panel + .sc-panel {
+    border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent);
+  }
+
+  /* With the 3D phone, every panel is a full screen the phone turns in. */
+  :global(html[data-3d]) .sc-panel {
     min-height: 100svh;
     padding-block: 5rem;
+    border-top: 0;
   }
 
   .sc-copy {
@@ -96,17 +102,7 @@ import { heroScreens } from "../data/screens";
     font-size: 0.75rem;
   }
 
-  .sc-fallback {
-    justify-self: center;
-    width: min(72vw, 22rem);
-    filter: drop-shadow(0 30px 40px rgb(0 0 0 / 0.3));
-  }
 
-  .sc-fallback img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
 
   @media (min-width: 900px) {
     .sc-copy {
@@ -124,9 +120,6 @@ import { heroScreens } from "../data/screens";
    * screen, so each panel keeps its copy on one side and leaves the centre
    * (and the opposite side) clear.
    */
-  :global(html[data-3d]) .sc-fallback {
-    display: none;
-  }
 
   :global(html[data-3d]) .sc-copy {
     grid-template-columns: minmax(0, 1fr);
