@@ -153,7 +153,7 @@ function mac() {
   if (!section) return;
   const title = $(".mac-title", section);
   if (title) riseChars(title, { stagger: 0.03, scrollTrigger: onEnter(title) });
-  const rest = $$(".mac-body, .mac-facts > div, .mac-install", section);
+  const rest = $$(".mac-body", section);
   if (rest.length) {
     gsap.from(rest, { y: 18, autoAlpha: 0, duration: 0.9, ease: EASE, stagger: 0.06, delay: 0.2, scrollTrigger: onEnter(section, "top 70%") });
   }
