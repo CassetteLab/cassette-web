@@ -3,8 +3,7 @@ import { Image } from "astro:assets";
 import { heroScreens } from "../data/screens";
 import NowPlaying from "./NowPlaying.astro";
 import Button from "./Button.astro";
-
-const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
+import AppStoreBadge from "./AppStoreBadge.astro";
 ---
 
 <section class="hero" data-hero aria-labelledby="hero-title">
@@ -50,7 +49,7 @@ const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
       </p>
 
       <div class="hero-cta">
-        <Button href={testflightUrl} label="Join the beta" arrow data-hero-step />
+        <AppStoreBadge data-hero-step />
         <Button href="#install" label="Get it on Mac" variant="line" data-hero-step />
       </div>
     </div>

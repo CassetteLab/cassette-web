@@ -1,0 +1,41 @@
+---
+/*
+ * Apple's official "Download on the App Store" badge, linking to Cassette.
+ * Used as supplied (Apple's guidelines: no recoloring, no effects, at least
+ * 40 px tall). Heights match Button's md / lg so it lines up next to them.
+ */
+import type { HTMLAttributes } from "astro/types";
+import badge from "../assets/app-store-badge.svg";
+import { appStoreUrl } from "../data/links";
+
+interface Props extends Omit<HTMLAttributes<"a">, "href"> {
+  size?: "md" | "lg";
+}
+
+const { size = "md", ...attrs } = Astro.props;
+---
+
+<a class:list={["app-store", `app-store-${size}`]} href={appStoreUrl} rel="noopener" target="_blank" {...attrs}>
+  <img src={badge.src} width={badge.width} height={badge.height} alt="Download on the App Store" decoding="async" />
+</a>
+
+<style>
+  .app-store {
+    display: inline-flex;
+    border-radius: 9px;
+  }
+
+  .app-store img {
+    display: block;
+    width: auto;
+    height: 100%;
+  }
+
+  .app-store-md {
+    height: 48px;
+  }
+
+  .app-store-lg {
+    height: 52px;
+  }
+</style>

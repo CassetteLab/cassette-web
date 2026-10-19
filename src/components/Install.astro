@@ -1,7 +1,5 @@
 ---
-import Button from "./Button.astro";
-
-const testflightUrl = "https://testflight.apple.com/join/pxCpfpxF";
+import AppStoreBadge from "./AppStoreBadge.astro";
 
 // macOS install commands — exact, do not alter.
 const installCommands = [
@@ -19,8 +17,8 @@ const copyText = installCommands.join("\n");
     <div class="install-grid">
       <div class="platform" data-reveal-group data-reveal-start="top 80%">
         <h3 class="platform-name display" data-reveal="chars">iPhone</h3>
-        <p class="platform-body" data-reveal="up" data-reveal-delay="0.25">The beta is public on TestFlight. Open the link on your iPhone to join it.</p>
-        <Button href={testflightUrl} label="Join the TestFlight beta" arrow size="lg" data-reveal="up" data-reveal-delay="0.25" />
+        <p class="platform-body" data-reveal="up" data-reveal-delay="0.25">Free on the App Store, for iOS 18 and later.</p>
+        <AppStoreBadge size="lg" data-reveal="up" data-reveal-delay="0.25" />
       </div>
 
       <div class="platform" data-reveal-group data-reveal-start="top 80%">

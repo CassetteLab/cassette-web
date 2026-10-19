@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
+import { appStoreId, appStoreUrl } from "../data/links";
 
 interface Props {
   title?: string;
@@ -51,7 +52,7 @@ const jsonLd = {
       applicationSubCategory: "Music Player",
       description,
       url: canonicalURL,
-      downloadUrl: "https://testflight.apple.com/join/pxCpfpxF",
+      downloadUrl: appStoreUrl,
       screenshot: new URL(
         "/images/header.png",
         Astro.site,
@@ -106,6 +107,8 @@ const jsonLd = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content={isHome ? "#b8111e" : "#0b0b0c"} />
+    <!-- Safari on iPhone: native "Open / Get" banner for the app. -->
+    <meta name="apple-itunes-app" content={`app-id=${appStoreId}`} />
     <meta name="color-scheme" content="dark" />
     <meta name="robots" content={robotsContent} />
     <meta name="author" content="Mathieu Dubart" />
